@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](https://nodejs.org/)
-[![Electron Version](https://img.shields.io/badge/electron-store-11.0.2-blue.svg)](https://github.com/sindresorhus/electron-store)
+[![electron-store](https://img.shields.io/npm/v/electron-store?label=electron-store)](https://www.npmjs.com/package/electron-store)
 
 ElemonHud is a **class homework points management system** developed based on Electron, supporting separated operations for teachers and students. It enables homework publishing, submission, points statistics, exam score management, and other core functions.
 
