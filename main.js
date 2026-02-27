@@ -54,6 +54,40 @@ function createMainWindow() {
 }
 
 // ========== IPC 接口 ==========
+// 调整学生积分（正数为加，负数为减）
+ipcMain.handle('adjust-student-score', async (_, { studentId, delta, reason }) => {
+  try {
+    studentId = Number(studentId);
+    delta = Number(delta);
+    if (isNaN(studentId) || isNaN(delta) || delta === 0) {
+      return { success: false, msg: '参数无效' };
+    }
+
+    let students = store.get('students', []);
+    const studentIndex = students.findIndex(s => s.id === studentId);
+    if (studentIndex === -1) {
+      return { success: false, msg: '学生不存在' };
+    }
+
+    // 更新积分
+    students[studentIndex].score = (students[studentIndex].score || 0) + delta;
+    // 防止出现负数（可选，若允许负数则注释掉下面两行）
+    if (students[studentIndex].score < 0) {
+      students[studentIndex].score = 0;
+    }
+    store.set('students', students);
+
+    // 可选：将调整记录保存到某个日志中（如操作记录），这里暂不实现
+
+    return { 
+      success: true, 
+      newScore: students[studentIndex].score,
+      student: students[studentIndex]
+    };
+  } catch (e) {
+    return { success: false, msg: '调整失败：' + e.message };
+  }
+});
 ipcMain.handle('save-init-password', async (_, pwd) => {
   try {
     const password = String(pwd).trim();
