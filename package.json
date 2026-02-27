@@ -1,0 +1,17 @@
+{
+  "name": "ElemonHud",
+  "version": "1.0.0",
+  "main": "main.js",
+  "description": "班级作业积分系统",
+  "author": "THEWINDOWS11",
+  "scripts": {
+    "start": "ElemonHud.exe ."
+  },
+  "dependencies": {
+    "electron-store": "^11.0.2",
+    "moment": "^2.30.1"
+  },
+  "devDependencies": {
+    "@electron/asar": "^4.0.1"
+  }
+}

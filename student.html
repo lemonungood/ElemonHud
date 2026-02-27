@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>班级空间 · 学生端</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- ECharts CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #f0f7ff;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(2px);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(165, 206, 255, 0.6);
+      box-shadow: 0 8px 20px rgba(53, 126, 221, 0.06);
+      transition: box-shadow 0.2s;
+    }
+
+    .card:hover {
+      box-shadow: 0 12px 28px rgba(36, 107, 207, 0.1);
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #c2ddff;
+      color: #1a4d8c;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.3px;
+    }
+
+    .section-title i {
+      color: #3b82f6;
+      font-size: 1.2em;
+    }
+
+    .warning-chip {
+      background: #fee2e2;
+      color: #b91c1c;
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid #ffb3b3;
+    }
+
+    .warning-chip:hover {
+      background: #fecaca;
+      transform: translateY(-2px);
+    }
+
+    .student-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .student-card {
+      background: #ffffffd9;
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid #c9e0ff;
+      backdrop-filter: blur(2px);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .student-card:hover {
+      border-color: #7bb3ff;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(53, 126, 221, 0.1);
+    }
+
+    .student-card.selected {
+      border: 2px solid #3385ff;
+      background: #ecf5ff;
+    }
+
+    .student-avatar {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #3385ff 0%, #1f6ed9 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 16px;
+    }
+
+    .student-name {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 4px;
+      color: #194a79;
+    }
+
+    .student-id {
+      font-size: 12px;
+      color: #4b7bb8;
+      margin-bottom: 16px;
+    }
+
+    .student-stats {
+      display: flex;
+      gap: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #cfe2ff;
+    }
+
+    .stat {
+      flex: 1;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #4b7bb8;
+      margin-bottom: 2px;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      font-size: 16px;
+      color: #1a4d8c;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #c2ddff;
+      padding-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1e5eb0;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #ecf5ff;
+      border: 1px solid #c2daff;
+    }
+
+    .tab:hover {
+      background: #d9ecff;
+      border-color: #7bb3ff;
+    }
+
+    .tab.active {
+      background: #3385ff;
+      color: white;
+      border-color: #3385ff;
+    }
+
+    .tab i {
+      margin-right: 6px;
+    }
+
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: #f4faff;
+      border-radius: 20px;
+      margin-bottom: 8px;
+      border: 1px solid #cfe2ff;
+      transition: all 0.2s;
+    }
+
+    .list-item:hover {
+      background: #ecf5ff;
+    }
+
+    .item-title {
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #194a79;
+    }
+
+    .item-meta {
+      font-size: 12px;
+      color: #4b7bb8;
+      display: flex;
+      gap: 12px;
+    }
+
+    .item-meta i {
+      margin-right: 4px;
+    }
+
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .status-pending {
+      background: #ffe6b7;
+      color: #b45f06;
+      border: 1px solid #ffd966;
+    }
+    
+    .status-ongoing {
+      background: #b7e0ff;
+      color: #0b5394;
+      border: 1px solid #7bb3ff;
+    }
+    
+    .status-grading {
+      background: #ffd9b7;
+      color: #b45f06;
+      border: 1px solid #ffb366;
+    }
+    
+    .status-ended {
+      background: #d0e0b7;
+      color: #2e7d32;
+      border: 1px solid #9fc5e8;
+    }
+
+    .btn {
+      padding: 8px 20px;
+      border-radius: 40px;
+      border: 1px solid #c2daff;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1e5eb0;
+      transition: all 0.15s;
+      margin: 0 4px;
+    }
+
+    .btn:hover {
+      background: #e2efff;
+      border-color: #80b4ff;
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: #3385ff;
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(51, 133, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: #1f6ed9;
+    }
+
+    .btn-success {
+      background: #32a852;
+      color: white;
+      border: none;
+    }
+
+    .btn-success:hover {
+      background: #2a8c44;
+    }
+
+    .btn-danger {
+      background: #f2645a;
+      color: white;
+      border: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .teacher-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 100;
+      background: #ffffffeb;
+      backdrop-filter: blur(4px);
+      color: #1f68c7;
+      border: 1px solid #b1d2ff;
+      border-radius: 60px;
+      padding: 16px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(77, 148, 255, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.3s;
+    }
+
+    .teacher-btn:hover {
+      background: white;
+      border-color: #75b0ff;
+      box-shadow: 0 10px 24px rgba(0, 102, 255, 0.2);
+      transform: translateY(-5px) scale(1.02);
+    }
+
+    .unified-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(40, 100, 200, 0.1);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .unified-content {
+      background: #ffffffec;
+      padding: 28px;
+      border-radius: 32px;
+      width: 400px;
+      max-width: 90%;
+      border: 1px solid #9bc5ff;
+      box-shadow: 0 30px 50px #9bbefb30;
+      animation: modalIn 0.3s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .unified-title {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      color: #194a8a;
+    }
+
+    .unified-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .unified-btn {
+      padding: 8px 20px;
+      border-radius: 40px;
+      border: 1px solid #c2daff;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1e5eb0;
+      transition: 0.15s;
+    }
+
+    .unified-btn:hover {
+      background: #e2efff;
+      border-color: #80b4ff;
+    }
+
+    .unified-btn.primary {
+      background: #3385ff;
+      color: white;
+      border: none;
+    }
+
+    .unified-btn.primary:hover {
+      background: #1f6ed9;
+    }
+
+    .unified-input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1px solid #c2daff;
+      border-radius: 50px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .unified-input:focus {
+      outline: none;
+      border-color: #4b9aff;
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: white;
+      border-radius: 16px;
+      padding: 16px 24px;
+      box-shadow: 0 10px 30px rgba(53, 126, 221, 0.15);
+      border-left: 4px solid #3385ff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+      max-width: 350px;
+      pointer-events: auto;
+      border: 1px solid #c2daff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(10px);
+        display: none;
+      }
+    }
+
+    .toast.success {
+      border-left-color: #32a852;
+    }
+
+    .toast.error {
+      border-left-color: #f2645a;
+    }
+
+    .toast.warning {
+      border-left-color: #ffaa33;
+    }
+
+    .toast i {
+      font-size: 20px;
+    }
+
+    .toast.success i {
+      color: #32a852;
+    }
+
+    .toast.error i {
+      color: #f2645a;
+    }
+
+    .toast.warning i {
+      color: #ffaa33;
+    }
+
+    .toast-message {
+      color: #1e293b;
+      font-size: 14px;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .toast-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: rgba(51, 133, 255, 0.3);
+      animation: progress 3s linear forwards;
+    }
+
+    @keyframes progress {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
+
+    .score-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .score-table th {
+      text-align: left;
+      padding: 12px;
+      background: #e2efff;
+      color: #1a4d8c;
+      font-weight: 500;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .score-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #cfe2ff;
+      color: #194a79;
+    }
+
+    .average-badge {
+      background: #e6f0ff;
+      color: #1a4d8c;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #c2daff;
+      white-space: nowrap;
+    }
+
+    .average-badge i {
+      color: #3385ff;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 300px;
+      margin: 20px 0;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    /* 教师端图表的样式也保留，确保兼容性 */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .chart-card {
+      background: #ffffffd9;
+      border-radius: 20px;
+      padding: 16px;
+      border: 1px solid #c9e0ff;
+      backdrop-filter: blur(2px);
+    }
+
+    .chart-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1f5bac;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div id="toastContainer" class="toast-container"></div>
+
+  <div id="unifiedModal" class="unified-modal">
+    <div class="unified-content">
+      <div class="unified-title" id="modalTitle">提示</div>
+      <div id="modalContent"></div>
+      <div class="unified-buttons" id="modalButtons"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+      <i class="fas fa-clock" style="color: #b91c1c; font-size: 18px;"></i>
+      <span style="font-weight: 600; color: #1a4d8c;">待交作业</span>
+      <span id="warningCount" style="margin-left: auto; color: #4b7bb8; background: #ecf5ff; padding: 4px 12px; border-radius: 40px; font-size: 13px; border: 1px solid #c2daff;">0人</span>
+    </div>
+    <div id="warningStudentList" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">
+      <i class="fas fa-users"></i>
+      班级同学
+    </div>
+    <div id="studentGrid" class="student-grid"></div>
+  </div>
+
+  <div id="detailPanel" class="card" style="display: none;">
+    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+      <div id="detailAvatar" class="student-avatar" style="margin-bottom: 0; width: 56px; height: 56px; font-size: 20px;"></div>
+      <div style="flex: 1;">
+        <div style="font-size: 20px; font-weight: 600; margin-bottom: 8px; color: #194a79;" id="detailName"></div>
+        <div class="stats-row">
+          <span class="average-badge"><i class="fas fa-star"></i> 积分 <span style="font-weight: 600;" id="detailScore"></span></span>
+          <span class="average-badge"><i class="fas fa-chart-line"></i> 平均分 <span style="font-weight: 600;" id="detailExamAverage">--</span> (120分制) <span id="detailExamCount"></span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('homework', event)"><i class="fas fa-pencil-alt"></i>待交作业</div>
+      <div class="tab" onclick="switchTab('submitted', event)"><i class="fas fa-check-circle"></i>已交作业</div>
+      <div class="tab" onclick="switchTab('exams', event)"><i class="fas fa-file-alt"></i>考试查询</div>
+      <div class="tab" onclick="switchTab('rewards', event)"><i class="fas fa-gift"></i>奖励兑换</div>
+      <div class="tab" onclick="switchTab('history', event)"><i class="fas fa-history"></i>兑换记录</div>
+    </div>
+
+    <div id="homeworkTab" class="tab-content">
+      <div id="pendingHomeworkList"></div>
+    </div>
+
+    <div id="submittedTab" class="tab-content" style="display: none;">
+      <div id="submittedHomeworkList"></div>
+    </div>
+
+    <div id="examsTab" class="tab-content" style="display: none;">
+      <!-- 走势图卡片 -->
+      <div style="background: #ffffffd9; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #c9e0ff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+          <h4 style="color: #1a4d8c; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-chart-line" style="color: #3385ff;"></i>
+            考试成绩走势（120分制）
+          </h4>
+          <div id="examStats" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+        </div>
+        <div id="scoreTrendChart" class="chart-container"></div>
+        <div id="noExamData" style="text-align: center; padding: 40px; color: #4b7bb8; display: none;">
+          <i class="fas fa-chart-line" style="font-size: 48px; opacity: 0.3; margin-bottom: 10px;"></i>
+          <p>暂无考试数据</p>
+        </div>
+      </div>
+
+      <!-- 考试列表 -->
+      <div id="studentExamList"></div>
+    </div>
+
+    <div id="rewardsTab" class="tab-content" style="display: none;">
+      <div id="rewardList"></div>
+    </div>
+
+    <div id="historyTab" class="tab-content" style="display: none;">
+      <div id="redemptionList"></div>
+    </div>
+  </div>
+
+  <div id="scoreDetailModal" class="unified-modal">
+    <div class="unified-content" style="width: 500px;">
+      <div class="unified-title" id="scoreDetailTitle">考试成绩</div>
+      <div id="scoreDetailContent"></div>
+      <div class="unified-buttons">
+        <button class="unified-btn primary" onclick="closeScoreDetailModal()">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="teacher-btn" onclick="gotoTeacher()">
+    <i class="fas fa-chalkboard-teacher"></i>
+    <span>老师入口</span>
+    <i class="fas fa-arrow-right"></i>
+  </button>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+    let allData = { students: [], homeworks: [], submissions: [], rewards: [], redemptions: [], exams: [], examScores: [] };
+    let currentStudentId = null;
+    let scoreChart = null;
+    let examHistory = [];
+
+    window.onload = async () => {
+      await loadAllData();
+      renderWarning();
+      renderStudentGrid();
+    };
+
+    function showToast(message, type = 'info', duration = 3000) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.style.position = 'relative';
+      toast.style.overflow = 'hidden';
+      
+      let icon = 'info-circle';
+      if (type === 'success') icon = 'check-circle';
+      if (type === 'error') icon = 'exclamation-circle';
+      if (type === 'warning') icon = 'exclamation-triangle';
+      
+      toast.innerHTML = `
+        <i class="fas fa-${icon}"></i>
+        <span class="toast-message">${message}</span>
+        <div class="toast-progress" style="animation: progress ${duration/1000}s linear forwards;"></div>
+      `;
+      
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        if (toast && toast.parentNode) {
+          toast.remove();
+        }
+      }, duration);
+    }
+
+    let modalResolve = null;
+
+    function showModal(options) {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('unifiedModal');
+        const title = document.getElementById('modalTitle');
+        const content = document.getElementById('modalContent');
+        const buttons = document.getElementById('modalButtons');
+        
+        title.innerText = options.title || '提示';
+        
+        if (typeof options.content === 'string') {
+          content.innerHTML = options.content;
+        } else {
+          content.innerHTML = '';
+          content.appendChild(options.content);
+        }
+        
+        buttons.innerHTML = '';
+        options.buttons.forEach(btn => {
+          const button = document.createElement('button');
+          button.className = `unified-btn ${btn.primary ? 'primary' : ''}`;
+          button.innerText = btn.text;
+          button.onclick = () => {
+            modal.style.display = 'none';
+            if (btn.value !== undefined) resolve(btn.value);
+            else resolve();
+          };
+          buttons.appendChild(button);
+        });
+        
+        modalResolve = resolve;
+        modal.style.display = 'flex';
+      });
+    }
+
+    function showConfirm(message) {
+      return showModal({
+        title: '确认',
+        content: `<p style="color: #194a79; margin-bottom: 10px;">${message}</p>`,
+        buttons: [
+          { text: '取消', value: false },
+          { text: '确定', primary: true, value: true }
+        ]
+      });
+    }
+
+    function showAlert(message) {
+      return showModal({
+        title: '提示',
+        content: `<p style="color: #194a79;">${message}</p>`,
+        buttons: [
+          { text: '确定', primary: true }
+        ]
+      });
+    }
+
+    async function loadAllData() {
+      allData = await ipcRenderer.invoke('get-all-data');
+    }
+
+    async function loadStudentExamAverage(studentId) {
+      try {
+        const res = await ipcRenderer.invoke('calculate-student-exam-average', studentId);
+        if (res.success) {
+          const avgElement = document.getElementById('detailExamAverage');
+          const countElement = document.getElementById('detailExamCount');
+          
+          if (res.count > 0) {
+            // 转换为120分制显示
+            const avg120 = Math.round((res.average / 100) * 120 * 10) / 10;
+            avgElement.innerText = avg120;
+            countElement.innerText = `(${res.count}场)`;
+          } else {
+            avgElement.innerText = '--';
+            countElement.innerText = '(暂无)';
+          }
+        }
+      } catch (e) {
+        console.error('加载平均分失败:', e);
+      }
+    }
+
+    async function loadStudentExamHistory(studentId) {
+      try {
+        const res = await ipcRenderer.invoke('get-student-exam-history', studentId);
+        if (res.success) {
+          examHistory = res.history; // 每条记录包含score120
+          renderScoreTrendChart();
+          updateExamStats();
+          
+          const chartContainer = document.getElementById('scoreTrendChart');
+          const noDataDiv = document.getElementById('noExamData');
+          if (res.count === 0) {
+            chartContainer.style.display = 'none';
+            noDataDiv.style.display = 'block';
+          } else {
+            chartContainer.style.display = 'block';
+            noDataDiv.style.display = 'none';
+          }
+        }
+      } catch (e) {
+        console.error('加载考试历史失败:', e);
+      }
+    }
+
+    async function renderScoreTrendChart() {
+      const chartDom = document.getElementById('scoreTrendChart');
+      if (!chartDom) return;
+      
+      if (scoreChart) {
+        scoreChart.dispose();
+      }
+      
+      if (examHistory.length === 0) return;
+      
+      // 获取班级平均（120分制）
+      const examAverages = [];
+      for (const exam of examHistory) {
+        const res = await ipcRenderer.invoke('get-exam-class-average', exam.examId);
+        examAverages.push(res.success ? res.average120 : 0);
+      }
+      
+      const xAxisData = examHistory.map(e => {
+        const date = new Date(e.examDate);
+        return `${e.examName}\n(${date.getMonth()+1}/${date.getDate()})`;
+      });
+      
+      const studentData = examHistory.map(e => e.score120); // 使用120分制
+      
+      scoreChart = echarts.init(chartDom);
+      scoreChart.setOption({
+        title: {
+          show: false
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          },
+          formatter: function(params) {
+            let result = params[0].name + '<br/>';
+            params.forEach(param => {
+              result += `${param.marker} ${param.seriesName}: ${param.value} 分 (120分制)<br/>`;
+            });
+            return result;
+          }
+        },
+        legend: {
+          data: ['我的成绩 (120分制)', '班级平均 (120分制)'],
+          orient: 'horizontal',
+          left: 'center',
+          top: 0,
+          textStyle: {
+            color: '#1a4d8c'
+          }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          top: '15%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: xAxisData,
+          axisLabel: {
+            rotate: 30,
+            color: '#1a4d8c',
+            fontSize: 11
+          },
+          axisLine: {
+            lineStyle: {
+              color: '#c2daff'
+            }
+          }
+        },
+        yAxis: {
+          type: 'value',
+          name: '分数',
+          nameTextStyle: {
+            color: '#1a4d8c'
+          },
+          min: 0,
+          max: 120,
+          axisLabel: {
+            color: '#1a4d8c',
+            formatter: '{value} 分'
+          },
+          splitLine: {
+            lineStyle: {
+              color: '#e2efff',
+              type: 'dashed'
+            }
+          }
+        },
+        series: [
+          {
+            name: '我的成绩 (120分制)',
+            type: 'line',
+            data: studentData,
+            symbol: 'circle',
+            symbolSize: 8,
+            lineStyle: {
+              color: '#3385ff',
+              width: 3
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(51, 133, 255, 0.3)' },
+                { offset: 1, color: 'rgba(51, 133, 255, 0.1)' }
+              ])
+            },
+            itemStyle: {
+              color: '#3385ff',
+              borderColor: '#fff',
+              borderWidth: 2
+            },
+            markLine: {
+              silent: true,
+              symbol: 'none',
+              lineStyle: {
+                type: 'dashed'
+              },
+              data: [
+                { yAxis: 72, name: '及格线', lineStyle: { color: '#f2645a', width: 2, type: 'dashed' } },
+                { yAxis: 108, name: '优秀线', lineStyle: { color: '#32a852', width: 2, type: 'dashed' } }
+              ],
+              label: {
+                show: true,
+                position: 'end',
+                formatter: '{b}',
+                color: '#1a4d8c',
+                fontSize: 11
+              }
+            }
+          },
+          {
+            name: '班级平均 (120分制)',
+            type: 'line',
+            data: examAverages,
+            symbol: 'diamond',
+            symbolSize: 8,
+            lineStyle: {
+              color: '#ffaa33',
+              width: 2,
+              type: 'dashed'
+            },
+            itemStyle: {
+              color: '#ffaa33',
+              borderColor: '#fff',
+              borderWidth: 2
+            }
+          }
+        ]
+      });
+      
+      window.addEventListener('resize', () => {
+        if (scoreChart) scoreChart.resize();
+      });
+    }
+
+    function updateExamStats() {
+      const statsDiv = document.getElementById('examStats');
+      if (examHistory.length === 0) {
+        statsDiv.innerHTML = '';
+        return;
+      }
+      
+      const latest = examHistory[examHistory.length - 1];
+      const best = examHistory.reduce((max, e) => e.score120 > max.score120 ? e : max, examHistory[0]);
+      const worst = examHistory.reduce((min, e) => e.score120 < min.score120 ? e : min, examHistory[0]);
+      const average = examHistory.reduce((sum, e) => sum + e.score120, 0) / examHistory.length;
+      
+      statsDiv.innerHTML = `
+        <span class="average-badge"><i class="fas fa-clock"></i> 最近: ${latest ? latest.score120 : '--'}分</span>
+        <span class="average-badge"><i class="fas fa-trophy" style="color: #ffaa33;"></i> 最高: ${best ? best.score120 : '--'}分</span>
+        <span class="average-badge"><i class="fas fa-arrow-down" style="color: #f2645a;"></i> 最低: ${worst ? worst.score120 : '--'}分</span>
+        <span class="average-badge"><i class="fas fa-chart-line"></i> 平均: ${average ? average.toFixed(1) : '--'}分</span>
+      `;
+    }
+
+    function renderWarning() {
+      const warningList = document.getElementById('warningStudentList');
+      const warningCount = document.getElementById('warningCount');
+      
+      const pendingStudents = allData.students.map(s => {
+        const assigned = allData.homeworks.filter(h => h.assignedStudentIds.includes(s.id)).length;
+        const submitted = allData.submissions.filter(sub => sub.studentId === s.id).length;
+        return { ...s, pending: assigned - submitted };
+      }).filter(s => s.pending > 0);
+
+      warningCount.innerText = pendingStudents.length + '人';
+
+      if (pendingStudents.length === 0) {
+        warningList.innerHTML = '<div style="color: #4b7bb8; padding: 8px 0;">✨ 全部完成</div>';
+        return;
+      }
+
+      warningList.innerHTML = pendingStudents.map(s => `
+        <div class="warning-chip" onclick="selectStudent(${s.id})">
+          <i class="fas fa-user"></i> ${s.name}
+          <span style="background: rgba(185, 28, 28, 0.1); padding: 2px 8px; border-radius: 40px;">${s.pending}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderStudentGrid() {
+      const grid = document.getElementById('studentGrid');
+      
+      grid.innerHTML = allData.students.map(s => {
+        const assigned = allData.homeworks.filter(h => h.assignedStudentIds.includes(s.id)).length;
+        const submitted = allData.submissions.filter(sub => sub.studentId === s.id).length;
+        const pending = assigned - submitted;
+        
+        return `
+          <div class="student-card ${currentStudentId === s.id ? 'selected' : ''}" onclick="selectStudent(${s.id})">
+            <div class="student-avatar">${s.name.charAt(0)}</div>
+            <div class="student-name">${s.name}</div>
+            <div class="student-id">ID: ${s.id}</div>
+            <div class="student-stats">
+              <div class="stat">
+                <div class="stat-label">积分</div>
+                <div class="stat-value">${s.score}</div>
+              </div>
+            </div>
+            ${pending > 0 ? 
+              `<div style="margin-top: 12px; font-size: 12px; color: #b91c1c; background: #fee2e2; padding: 4px 8px; border-radius: 40px; display: inline-block; border: 1px solid #ffb3b3;">
+                <i class="fas fa-exclamation-circle"></i> ${pending}个待交
+              </div>` : 
+              `<div style="margin-top: 12px; font-size: 12px; color: #2e7d32; background: #d0e0b7; padding: 4px 8px; border-radius: 40px; display: inline-block; border: 1px solid #9fc5e8;">
+                <i class="fas fa-check-circle"></i> 全部完成
+              </div>`
+            }
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectStudent(id) {
+      currentStudentId = id;
+      const student = allData.students.find(s => s.id === id);
+      
+      document.getElementById('detailPanel').style.display = 'block';
+      document.getElementById('detailAvatar').innerText = student.name.charAt(0);
+      document.getElementById('detailName').innerText = student.name;
+      document.getElementById('detailScore').innerText = student.score;
+      
+      loadStudentExamAverage(id);
+      loadStudentExamHistory(id);
+      
+      renderStudentGrid();
+      renderPendingHomework();
+      renderSubmittedHomework();
+      renderStudentExams();
+      renderRewards();
+      renderRedemptions();
+      
+      document.getElementById('detailPanel').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderPendingHomework() {
+      const list = document.getElementById('pendingHomeworkList');
+      if (!currentStudentId) return;
+
+      const pending = allData.homeworks.filter(h => 
+        h.assignedStudentIds.includes(currentStudentId) && 
+        !allData.submissions.some(s => s.studentId === currentStudentId && s.homeworkId === h.id)
+      );
+
+      if (pending.length === 0) {
+        list.innerHTML = '<div style="text-align: center; padding: 30px; color: #4b7bb8;">✨ 没有待交作业</div>';
+        return;
+      }
+
+      list.innerHTML = pending.map(h => `
+        <div class="list-item">
+          <div>
+            <div class="item-title">${h.name}</div>
+            <div class="item-meta">
+              <span><i class="fas fa-star" style="color: #ffaa33;"></i> +${h.score}分</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="submitHomework('${h.id}')">
+            <i class="fas fa-upload"></i> 提交
+          </button>
+        </div>
+      `).join('');
+    }
+
+    async function submitHomework(id) {
+      const res = await ipcRenderer.invoke('submit-homework-and-add-score', {
+        studentId: currentStudentId, homeworkId: id
+      });
+      
+      if (res.success) {
+        await loadAllData();
+        renderWarning();
+        renderStudentGrid();
+        renderPendingHomework();
+        renderSubmittedHomework();
+        renderRewards();
+        
+        const student = allData.students.find(s => s.id === currentStudentId);
+        document.getElementById('detailScore').innerText = student.score;
+      }
+      showToast(res.msg, res.success ? 'success' : 'error');
+    }
+
+    function renderSubmittedHomework() {
+      const list = document.getElementById('submittedHomeworkList');
+      if (!currentStudentId) return;
+
+      const subs = allData.submissions
+        .filter(s => s.studentId === currentStudentId)
+        .sort((a, b) => new Date(b.submitTime) - new Date(a.submitTime));
+
+      if (subs.length === 0) {
+        list.innerHTML = '<div style="text-align: center; padding: 30px; color: #4b7bb8;">暂无提交记录</div>';
+        return;
+      }
+
+      list.innerHTML = subs.map(s => {
+        const hw = allData.homeworks.find(h => h.id === s.homeworkId);
+        return `
+          <div class="list-item">
+            <div>
+              <div class="item-title">${hw?.name || '未知作业'}</div>
+              <div class="item-meta">
+                <i class="fas fa-clock"></i> ${s.submitTime}
+              </div>
+            </div>
+            <i class="fas fa-check-circle" style="color: #32a852; font-size: 24px;"></i>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function renderStudentExams() {
+      const list = document.getElementById('studentExamList');
+      if (!currentStudentId) return;
+
+      const exams = allData.exams || [];
+      
+      if (exams.length === 0) {
+        list.innerHTML = '<div style="text-align: center; padding: 30px; color: #4b7bb8;">暂无考试</div>';
+        return;
+      }
+
+      const sortedExams = [...exams].sort((a, b) => {
+        const statusOrder = { 'ended': 0, 'grading': 1, 'ongoing': 2, 'pending': 3 };
+        return statusOrder[a.status] - statusOrder[b.status];
+      });
+
+      const examPromises = sortedExams.map(async exam => {
+        const res = await ipcRenderer.invoke('get-exam-class-average', exam.id);
+        return { exam, classAvg: res.success ? res.average120 : null }; // 使用120分制
+      });
+      
+      const results = await Promise.all(examPromises);
+      
+      list.innerHTML = results.map(({ exam, classAvg }) => {
+        const statusText = {
+          'pending': '📝 准备开考',
+          'ongoing': '⏳ 考试中',
+          'grading': '📊 批卷中',
+          'ended': '✅ 已结束'
+        }[exam.status] || exam.status;
+
+        const statusClass = {
+          'pending': 'status-pending',
+          'ongoing': 'status-ongoing',
+          'grading': 'status-grading',
+          'ended': 'status-ended'
+        }[exam.status] || '';
+
+        const score = allData.examScores.find(es => es.examId === exam.id && es.studentId === currentStudentId);
+        const score120 = score ? Math.round((score.score / exam.totalScore) * 120 * 10) / 10 : null;
+        
+        return `
+          <div class="list-item" style="flex-wrap: wrap;">
+            <div style="flex: 1;">
+              <div class="item-title">${exam.name}</div>
+              <div class="item-meta">
+                <span><i class="far fa-clock"></i> ${exam.duration}分钟</span>
+                <span><i class="fas fa-star"></i> 满分 ${exam.totalScore}分</span>
+              </div>
+              ${exam.status === 'ended' && score ? `
+                <div style="margin-top: 10px; display: flex; gap: 15px; flex-wrap: wrap;">
+                  <span class="average-badge"><i class="fas fa-user"></i> 我的成绩: ${score.score}分 (${score120}分/120)</span>
+                  ${classAvg ? `<span class="average-badge"><i class="fas fa-users"></i> 班级平均: ${classAvg}分 (120分制)</span>` : ''}
+                </div>
+              ` : ''}
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px; margin-top: ${exam.status === 'ended' && score ? '10px' : '0'};">
+              <span class="status-badge ${statusClass}">${statusText}</span>
+              ${exam.status === 'ended' && score ? 
+                `<button class="btn btn-primary" onclick="viewExamScore('${exam.id}')">查看详情</button>` : 
+                exam.status === 'ended' ? 
+                `<span style="color: #4b7bb8;">成绩未录入</span>` : 
+                `<span style="color: #4b7bb8;">-</span>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function viewExamScore(examId) {
+      const exam = allData.exams.find(e => e.id === examId);
+      const score = allData.examScores.find(es => es.examId === examId && es.studentId === currentStudentId);
+      
+      if (!exam || !score) return;
+      
+      const student = allData.students.find(s => s.id === currentStudentId);
+      const score120 = Math.round((score.score / exam.totalScore) * 120 * 10) / 10;
+      
+      let html = `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 48px; color: #3385ff; margin-bottom: 10px;">${score.score}</div>
+          <div style="color: #4b7bb8;">满分 ${exam.totalScore} 分 (120分制: ${score120}分)</div>
+        </div>
+        <table class="score-table">
+          <tr>
+            <th>考试名称</th>
+            <td>${exam.name}</td>
+          </tr>
+          <tr>
+            <th>学生姓名</th>
+            <td>${student.name}</td>
+          </tr>
+          <tr>
+            <th>考试时长</th>
+            <td>${exam.duration} 分钟</td>
+          </tr>
+          <tr>
+            <th>考试时间</th>
+            <td>${exam.startTime || '未知'}</td>
+          </tr>
+          <tr>
+            <th>成绩</th>
+            <td><strong style="color: #3385ff; font-size: 18px;">${score.score}</strong> / ${exam.totalScore} (120分制: ${score120})</td>
+          </tr>
+          ${score.comment ? `
+          <tr>
+            <th>教师评语</th>
+            <td>${score.comment}</td>
+          </tr>
+          ` : ''}
+        </table>
+      `;
+      
+      document.getElementById('scoreDetailTitle').innerText = `${exam.name} - 成绩单`;
+      document.getElementById('scoreDetailContent').innerHTML = html;
+      document.getElementById('scoreDetailModal').style.display = 'flex';
+    }
+
+    function closeScoreDetailModal() {
+      document.getElementById('scoreDetailModal').style.display = 'none';
+    }
+
+    function renderRewards() {
+      const list = document.getElementById('rewardList');
+      if (!currentStudentId) return;
+
+      const student = allData.students.find(s => s.id === currentStudentId);
+
+      if (allData.rewards.length === 0) {
+        list.innerHTML = '<div style="text-align: center; padding: 30px; color: #4b7bb8;">暂无奖励</div>';
+        return;
+      }
+
+      list.innerHTML = allData.rewards.map(r => {
+        const canAfford = student.score >= r.points;
+        return `
+          <div class="list-item">
+            <div>
+              <div class="item-title">🎁 ${r.name}</div>
+              <div class="item-meta" style="color: ${canAfford ? '#32a852' : '#f2645a'};">
+                <i class="fas fa-coins"></i> ${r.points}积分
+              </div>
+            </div>
+            <button class="btn ${canAfford ? 'btn-success' : ''}" 
+                    onclick="exchangeReward('${r.id}')"
+                    ${!canAfford ? 'disabled' : ''}>
+              ${canAfford ? '兑换' : '积分不足'}
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function exchangeReward(id) {
+      const res = await ipcRenderer.invoke('request-redemption', {
+        studentId: currentStudentId, rewardId: id
+      });
+
+      if (res.success) {
+        await loadAllData();
+        renderStudentGrid();
+        renderRewards();
+        renderRedemptions();
+        
+        const student = allData.students.find(s => s.id === currentStudentId);
+        document.getElementById('detailScore').innerText = student.score;
+      }
+      showToast(res.msg, res.success ? 'success' : 'error');
+    }
+
+    function renderRedemptions() {
+      const list = document.getElementById('redemptionList');
+      if (!currentStudentId) return;
+
+      const reds = allData.redemptions
+        .filter(r => r.studentId === currentStudentId)
+        .sort((a, b) => new Date(b.requestTime) - new Date(a.requestTime));
+
+      if (reds.length === 0) {
+        list.innerHTML = '<div style="text-align: center; padding: 30px; color: #4b7bb8;">暂无兑换记录</div>';
+        return;
+      }
+
+      const statusMap = {
+        pending: { text: '待审批', color: '#ffaa33' },
+        approved: { text: '已批准', color: '#32a852' },
+        rejected: { text: '已驳回', color: '#f2645a' },
+        completed: { text: '已兑换', color: '#3385ff' }
+      };
+
+      list.innerHTML = reds.map(r => {
+        const reward = allData.rewards.find(rew => rew.id === r.rewardId);
+        const status = statusMap[r.status] || { text: r.status, color: '#4b7bb8' };
+        
+        return `
+          <div class="list-item">
+            <div>
+              <div class="item-title">${reward?.name || '未知奖励'}</div>
+              <div class="item-meta">
+                <span>${r.requestTime}</span>
+                ${r.processorNote ? `<span style="color: #4b7bb8;">· ${r.processorNote}</span>` : ''}
+              </div>
+            </div>
+            <span style="color: ${status.color}; font-weight: 500;">${status.text}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function switchTab(tab, e) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      e.target.classList.add('active');
+      
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      document.getElementById(tab + 'Tab').style.display = 'block';
+      
+      // 如果切换到考试标签且图表存在，重新调整大小
+      if (tab === 'exams' && scoreChart) {
+        setTimeout(() => scoreChart.resize(), 100);
+      }
+    }
+
+    function gotoTeacher() {
+      document.getElementById('teacherModal').style.display = 'flex';
+      document.getElementById('teacherPassword').focus();
+    }
+
+    function closeTeacherModal() {
+      document.getElementById('teacherModal').style.display = 'none';
+      document.getElementById('teacherPassword').value = '';
+    }
+
+    async function verifyTeacher() {
+      const pwd = document.getElementById('teacherPassword').value.trim();
+      if (!pwd) {
+        showToast('请输入密码', 'warning');
+        return;
+      }
+
+      const res = await ipcRenderer.invoke('verify-teacher-password', pwd);
+      if (res.success) {
+        closeTeacherModal();
+      } else {
+        showToast(res.msg, 'error');
+        document.getElementById('teacherPassword').value = '';
+      }
+    }
+
+    // 暴露全局函数
+    window.selectStudent = selectStudent;
+    window.submitHomework = submitHomework;
+    window.exchangeReward = exchangeReward;
+    window.viewExamScore = viewExamScore;
+    window.closeScoreDetailModal = closeScoreDetailModal;
+    window.switchTab = switchTab;
+    window.gotoTeacher = gotoTeacher;
+    window.closeTeacherModal = closeTeacherModal;
+    window.verifyTeacher = verifyTeacher;
+  </script>
+
+  <div id="teacherModal" class="unified-modal">
+    <div class="unified-content">
+      <div class="unified-title">老师验证</div>
+      <input type="password" id="teacherPassword" class="unified-input" placeholder="请输入密码">
+      <div class="unified-buttons">
+        <button class="unified-btn" onclick="closeTeacherModal()">取消</button>
+        <button class="unified-btn primary" onclick="verifyTeacher()">确认</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

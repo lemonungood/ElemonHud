@@ -1,0 +1,2242 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>班级空间 · 教师端</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- ECharts CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+	
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #f0f7ff;
+      padding: 24px;
+    }
+
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #f0f7ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      transition: opacity 0.3s;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(2px);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(165, 206, 255, 0.6);
+      box-shadow: 0 8px 20px rgba(53, 126, 221, 0.06);
+      transition: box-shadow 0.2s;
+    }
+
+    .card:hover {
+      box-shadow: 0 12px 28px rgba(36, 107, 207, 0.1);
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #c2ddff;
+      color: #1a4d8c;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.3px;
+    }
+
+    .section-title i {
+      color: #3b82f6;
+      font-size: 1.2em;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .chart-card {
+      background: #ffffffd9;
+      border-radius: 20px;
+      padding: 16px;
+      border: 1px solid #c9e0ff;
+      backdrop-filter: blur(2px);
+    }
+
+    .chart-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1f5bac;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 220px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: #ffffffdb;
+      border-radius: 20px;
+      padding: 20px 16px;
+      border: 1px solid #c2daff;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: #3670b3;
+      margin-bottom: 8px;
+      font-weight: 450;
+    }
+
+    .stat-number {
+      font-size: 34px;
+      font-weight: 500;
+      color: #1e6dc7;
+      line-height: 1.2;
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      color: #4b7bb8;
+      margin-top: 4px;
+    }
+
+    .student-list {
+      margin-top: 12px;
+    }
+
+    .student-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #f4faff;
+      border-radius: 18px;
+      margin-bottom: 6px;
+      border: 1px solid #cfe2ff;
+      color: #194a79;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .student-item:hover {
+      background: #ecf5ff;
+      border-color: #7bb3ff;
+      transform: translateY(-2px);
+    }
+
+    .badge {
+      background: #ffb347;
+      color: white;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-left: 10px;
+    }
+
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .status-pending {
+      background: #ffe6b7;
+      color: #b45f06;
+    }
+    
+    .status-ongoing {
+      background: #b7e0ff;
+      color: #0b5394;
+    }
+    
+    .status-grading {
+      background: #ffd9b7;
+      color: #b45f06;
+    }
+    
+    .status-ended {
+      background: #d0e0b7;
+      color: #2e7d32;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 10px;
+    }
+
+    .tool-item {
+      padding: 16px 8px;
+      background: #ecf5ff;
+      border-radius: 18px;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid #c2daff;
+      color: #1960b0;
+      transition: all 0.2s;
+    }
+
+    .tool-item:hover {
+      background: #d9ecff;
+      border-color: #7bb3ff;
+    }
+
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #f4faff;
+      border-radius: 20px;
+      margin-bottom: 8px;
+      border: 1px solid #cfe2ff;
+    }
+
+    .item-info {
+      color: #195496;
+    }
+
+    .item-name {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .item-detail {
+      font-size: 12px;
+      color: #4b7bb8;
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 8px 20px;
+      border-radius: 40px;
+      border: 1px solid #c2daff;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1e5eb0;
+      transition: 0.15s;
+      margin: 0 4px;
+    }
+
+    .btn:hover {
+      background: #e2efff;
+      border-color: #80b4ff;
+    }
+
+    .btn-primary {
+      background: #3385ff;
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: #1f6ed9;
+    }
+
+    .btn-success {
+      background: #32a852;
+      color: white;
+      border: none;
+    }
+
+    .btn-success:hover {
+      background: #2a8c44;
+    }
+
+    .btn-danger {
+      background: #f2645a;
+      color: white;
+      border: none;
+    }
+
+    .btn-warning {
+      background: #ffaa33;
+      color: white;
+      border: none;
+    }
+
+    input, select, textarea {
+      padding: 10px 16px;
+      border: 1px solid #c2daff;
+      border-radius: 40px;
+      font-size: 14px;
+      background: white;
+      margin: 5px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #4b9aff;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 24px;
+      margin: 16px 0;
+      color: #1d5ba3;
+    }
+
+    .back-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      padding: 14px 28px;
+      background: #ffffffeb;
+      backdrop-filter: blur(4px);
+      color: #1f68c7;
+      border: 1px solid #b1d2ff;
+      border-radius: 60px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 18px rgba(77, 148, 255, 0.15);
+      transition: 0.2s;
+      z-index: 100;
+    }
+
+    .back-btn:hover {
+      background: white;
+      border-color: #75b0ff;
+      box-shadow: 0 10px 24px rgba(0, 102, 255, 0.2);
+      transform: translateY(-3px);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(40, 100, 200, 0.1);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal-content {
+      background: #ffffffec;
+      padding: 28px;
+      border-radius: 32px;
+      width: 400px;
+      max-width: 90%;
+      border: 1px solid #9bc5ff;
+      box-shadow: 0 30px 50px #9bbefb30;
+      animation: modalIn 0.3s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      color: #194a8a;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1px solid #c2daff;
+      border-radius: 50px;
+      margin-bottom: 20px;
+    }
+
+    .fullscreen-timer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      z-index: 10000;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .timer-display {
+      font-size: 180px;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      text-shadow: 0 20px 30px rgba(0,0,0,0.3);
+      margin-bottom: 40px;
+      line-height: 1;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 20px;
+    }
+
+    .timer-btn {
+      padding: 20px 50px;
+      border: none;
+      border-radius: 60px;
+      font-size: 24px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .timer-btn.pause {
+      background: #ffaa33;
+      color: white;
+    }
+
+    .timer-btn.pause:hover {
+      background: #ff9500;
+      transform: scale(1.05);
+    }
+
+    .timer-btn.close {
+      background: #f2645a;
+      color: white;
+    }
+
+    .timer-btn.close:hover {
+      background: #e03a2f;
+      transform: scale(1.05);
+    }
+
+    .timer-btn.resume {
+      background: #32a852;
+      color: white;
+    }
+
+    .timer-info {
+      font-size: 24px;
+      margin-bottom: 20px;
+      opacity: 0.9;
+    }
+
+    .score-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .score-table th {
+      text-align: left;
+      padding: 12px;
+      background: #e2efff;
+      color: #1a4d8c;
+      font-weight: 500;
+    }
+
+    .score-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #cfe2ff;
+    }
+
+    .score-input {
+      width: 80px;
+      padding: 6px;
+      border-radius: 20px;
+      border: 1px solid #c2daff;
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: white;
+      border-radius: 16px;
+      padding: 16px 24px;
+      box-shadow: 0 10px 30px rgba(53, 126, 221, 0.15);
+      border-left: 4px solid #3385ff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+      max-width: 350px;
+      pointer-events: auto;
+      border: 1px solid #c2daff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(10px);
+        display: none;
+      }
+    }
+
+    .toast.success {
+      border-left-color: #32a852;
+    }
+
+    .toast.error {
+      border-left-color: #f2645a;
+    }
+
+    .toast.warning {
+      border-left-color: #ffaa33;
+    }
+
+    .toast i {
+      font-size: 20px;
+    }
+
+    .toast.success i {
+      color: #32a852;
+    }
+
+    .toast.error i {
+      color: #f2645a;
+    }
+
+    .toast.warning i {
+      color: #ffaa33;
+    }
+
+    .toast-message {
+      color: #1e293b;
+      font-size: 14px;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .toast-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: rgba(51, 133, 255, 0.3);
+      animation: progress 3s linear forwards;
+    }
+
+    @keyframes progress {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
+
+    .average-badge {
+      background: #e6f0ff;
+      color: #1a4d8c;
+      padding: 2px 10px;
+      border-radius: 40px;
+      font-size: 11px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid #c2daff;
+    }
+
+    .student-detail-avatar {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #3385ff 0%, #1f6ed9 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .exam-list-item {
+      padding: 12px;
+      background: #f4faff;
+      border-radius: 16px;
+      margin-bottom: 8px;
+      border: 1px solid #cfe2ff;
+    }
+
+    .exam-list-item:hover {
+      background: #ecf5ff;
+    }
+    #studentDetailModal .modal-content::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="loadingOverlay">
+    <div style="text-align: center;">
+      <div style="width: 50px; height: 50px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+      <div style="margin-top: 20px; color: #1e293b;">加载教师端数据...</div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- 统计卡片区 -->
+  <div class="card">
+    <div class="section-title"><i class="fas fa-chart-pie"></i> 班级数据总览</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">班级总积分</div>
+        <div class="stat-number" id="totalScore">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">平均分</div>
+        <div class="stat-number" id="avgScore">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">最高分</div>
+        <div class="stat-number" id="maxScore">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">考试平均分</div>
+        <div class="stat-number" id="examAvgScore">--</div>
+        <div class="stat-sub" id="examAvgDetail"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图表区 -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title"><i class="fas fa-chart-pie" style="color:#1e88e5;"></i> 积分分布饼图</div>
+      <div id="pieChart" class="chart-container"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><i class="fas fa-chart-bar"></i> 分数段人数</div>
+      <div id="barChart" class="chart-container"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><i class="fas fa-chart-line"></i> 学生积分排行</div>
+      <div id="lineChart" class="chart-container"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><i class="fas fa-radar"></i> 班级综合指标</div>
+      <div id="radarChart" class="chart-container"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><i class="fas fa-ring"></i> 兑换状态比例</div>
+      <div id="donutChart" class="chart-container"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><i class="fas fa-check-double"></i> 作业提交率</div>
+      <div id="gaugeChart" class="chart-container"></div>
+    </div>
+  </div>
+
+  <!-- 考试管理卡片 -->
+  <div class="card">
+    <div class="section-title"><i class="fas fa-pencil-alt"></i> 考试管理</div>
+    
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+      <input type="text" id="examName" placeholder="考试名称（如：第一次月考）" style="flex: 2;">
+      <input type="number" id="examDuration" placeholder="时长(分钟)" value="45" style="width: 120px;">
+      <input type="number" id="examTotalScore" placeholder="总分" value="100" style="width: 100px;">
+      <button class="btn btn-primary" onclick="createExam()">创建考试</button>
+    </div>
+    <input type="text" id="examDescription" placeholder="考试描述（可选）" style="width: 100%;">
+
+    <div style="margin-top: 20px;">
+      <h4 style="color: #1a4d8c; margin-bottom: 15px;">📋 考试列表</h4>
+      <div id="examList"></div>
+    </div>
+  </div>
+
+  <!-- 积分最少的人 -->
+  <div class="card">
+    <div class="section-title"><i class="fas fa-exclamation-triangle" style="color:#f29c33;"></i> 积分最少同学</div>
+    <div id="lowestScoreList" class="student-list"></div>
+  </div>
+
+  <!-- 课堂工具 -->
+  <div class="card">
+    <div class="section-title"><i class="fas fa-tools"></i> 课堂工具</div>
+    <div class="tools-grid">
+      <div class="tool-item" onclick="showTool('random')"><i class="fas fa-random"></i><div>随机抽人</div></div>
+      <div class="tool-item" onclick="showTool('calculator')"><i class="fas fa-calculator"></i><div>计算器</div></div>
+      <div class="tool-item" onclick="showTool('timer')"><i class="fas fa-clock"></i><div>计时器</div></div>
+      <div class="tool-item" onclick="showTool('dice')"><i class="fas fa-dice"></i><div>掷骰子</div></div>
+      <div class="tool-item" onclick="showTool('group')"><i class="fas fa-users"></i><div>分组器</div></div>
+    </div>
+
+    <div id="toolDisplay" style="margin-top:24px; padding:20px; background:#f3f9ff; border-radius:28px; border:1px solid #c7e0ff;">
+      <!-- 随机抽人 -->
+      <div id="randomTool">
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <input type="number" id="randomCount" min="1" value="1" style="width:80px;">
+          <button class="btn btn-primary" onclick="randomSelect()">抽取</button>
+        </div>
+        <div id="randomResult" style="margin-top:12px;"></div>
+      </div>
+      <!-- 计算器 -->
+      <div id="calculatorTool" style="display:none;">
+        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+          <input type="number" id="calc1" style="width:90px;"> 
+          <select id="calcOp" style="width:60px;"><option value="+">+</option><option value="-">-</option><option value="*">×</option><option value="/">÷</option></select>
+          <input type="number" id="calc2" style="width:90px;">
+          <button class="btn btn-primary" onclick="calculate()">=</button>
+        </div>
+        <div id="calcResult" style="margin-top:12px; font-size:22px; color:#1965b5;">0</div>
+      </div>
+      <!-- 计时器 -->
+      <div id="timerTool" style="display:none;">
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <input type="number" id="timerMinutes" value="1" min="1" style="width:80px;"> 分钟
+          <button class="btn btn-primary" onclick="startTimer()">开始</button>
+          <button class="btn" onclick="resetTimer()">重置</button>
+          <button class="btn btn-success" onclick="openFullscreenTimer()">全屏模式</button>
+        </div>
+        <div id="timerDisplay" style="font-size:28px; font-family:monospace; margin-top:12px; color:#195eb5;">01:00</div>
+      </div>
+      <!-- 掷骰子 -->
+      <div id="diceTool" style="display:none; text-align:center;">
+        <div id="diceResult" style="font-size:48px;">🎲</div>
+        <button class="btn btn-primary" onclick="rollDice()">掷骰子</button>
+      </div>
+      <!-- 分组器 -->
+      <div id="groupTool" style="display:none;">
+        <div><input type="number" id="groupCount" value="2" min="2" style="width:70px;"> 组
+          <button class="btn btn-primary" onclick="makeGroups()">分组</button>
+        </div>
+        <div id="groupResult" style="margin-top:12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 学生管理 -->
+  <div class="card">
+    <div class="section-title"><i class="fas fa-users"></i> 学生管理</div>
+    <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+      <input type="text" id="studentName" placeholder="学生姓名">
+      <button class="btn btn-primary" onclick="addStudent()">添加</button>
+      <button class="btn" onclick="importStudents()">TXT导入</button>
+      <button class="btn btn-danger" onclick="resetScores()">重置积分</button>
+    </div>
+    <div id="studentList"></div>
+  </div>
+
+  <!-- 作业管理 -->
+  <div class="card">
+    <div class="section-title"><i class="fas fa-book"></i> 作业管理</div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
+      <input type="text" id="homeworkName" placeholder="作业名称">
+      <input type="number" id="homeworkScore" placeholder="加分" value="10" style="width:90px;">
+    </div>
+    <label><input type="checkbox" id="selectAll"> 全选所有学生</label>
+    <div id="studentCheckboxes" class="checkbox-group" style="margin-top:10px;"></div>
+    <button class="btn btn-success" onclick="addHomework()" style="margin-top:8px;">添加作业</button>
+    <div id="homeworkList" style="margin-top:20px;"></div>
+  </div>
+
+  <!-- 奖励管理 -->
+  <div class="card">
+    <div class="section-title"><i class="fas fa-gift"></i> 奖励管理</div>
+    <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+      <input type="text" id="rewardName" placeholder="奖励名称">
+      <input type="number" id="rewardPoints" placeholder="所需积分">
+      <button class="btn btn-primary" onclick="addReward()">添加</button>
+    </div>
+    <div id="rewardList"></div>
+  </div>
+
+  <!-- 兑换请求 -->
+  <div class="card">
+    <div class="section-title"><i class="fas fa-clipboard-list"></i> 兑换请求</div>
+    <div id="redemptionList"></div>
+  </div>
+
+  <!-- 返回学生端按钮 -->
+  <button class="back-btn" onclick="backToStudent()"><i class="fas fa-arrow-left"></i> 返回学生端</button>
+
+  <!-- 密码弹窗 -->
+  <div id="teacherModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">老师验证</div>
+      <input type="password" id="teacherPassword" class="modal-input" placeholder="请输入密码">
+      <div class="modal-buttons" style="display:flex; gap:10px; justify-content:flex-end;">
+        <button class="btn" onclick="closeTeacherModal()">取消</button>
+        <button class="btn btn-primary" onclick="verifyTeacher()">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 驳回弹窗 -->
+  <div id="rejectModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">驳回原因</div>
+      <textarea id="rejectReason" class="modal-input" rows="3"></textarea>
+      <div class="modal-buttons">
+        <button class="btn" onclick="closeRejectModal()">取消</button>
+        <button class="btn btn-primary" onclick="confirmReject()">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 成绩录入弹窗 -->
+  <div id="scoreModal" class="modal">
+    <div class="modal-content" style="width: 600px; max-width: 90%;">
+      <div class="modal-title" id="scoreModalTitle">录入成绩</div>
+      <div id="scoreEntryForm"></div>
+      <div class="modal-buttons" style="margin-top: 20px;">
+        <button class="btn" onclick="closeScoreModal()">关闭</button>
+        <button class="btn btn-primary" onclick="saveAllScores()">保存所有成绩</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 学生详情卡片弹窗 -->
+  <div id="studentDetailModal" class="modal">
+    <div class="modal-content" style="width: 800px; max-width: 90%; height: 95vh; max-height: 95vh; overflow-y: auto;">
+      <div class="modal-title" id="studentDetailName">学生详情</div>
+      
+      <!-- 学生基本信息 -->
+      <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 25px; padding: 15px; background: #f4faff; border-radius: 20px;">
+        <div class="student-detail-avatar" id="studentDetailAvatar"></div>
+        <div>
+          <div style="font-size: 20px; font-weight: 600; color: #194a79; margin-bottom: 8px;" id="studentDetailName2"></div>
+          <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <span class="average-badge"><i class="fas fa-star"></i> 积分: <span id="studentDetailScore">0</span></span>
+            <span class="average-badge"><i class="fas fa-chart-line"></i> 考试平均分: <span id="studentDetailAvg">--</span> (120分制)</span>
+            <span class="average-badge"><i class="fas fa-clock"></i> 考试次数: <span id="studentDetailCount">0</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 走势图 -->
+      <div style="margin-bottom: 20px;">
+        <h4 style="color: #1a4d8c; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-chart-line" style="color: #3385ff;"></i>
+          考试成绩走势（120分制）
+        </h4>
+        <div id="studentDetailChart" class="chart-container" style="height: 350px;"></div>
+        <div id="studentDetailNoData" style="text-align: center; padding: 40px; color: #4b7bb8; display: none;">
+          <i class="fas fa-chart-line" style="font-size: 48px; opacity: 0.3; margin-bottom: 10px;"></i>
+          <p>该学生暂无考试数据</p>
+        </div>
+      </div>
+
+      <!-- 考试列表 -->
+      <div style="padding-right: 10px;">
+        <h4 style="color: #1a4d8c; margin-bottom: 15px;">📋 考试记录</h4>
+        <div id="studentDetailExamList"></div>
+      </div>
+
+      <div class="modal-buttons" style="margin-top: 20px;">
+        <button class="btn btn-primary" onclick="closeStudentDetailModal()">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全屏计时器 -->
+  <div id="fullscreenTimer" class="fullscreen-timer">
+    <div class="timer-info" id="fullscreenTimerName">考试计时器</div>
+    <div class="timer-display" id="fullscreenTimerDisplay">00:00</div>
+    <div class="timer-controls">
+      <button class="timer-btn pause" id="fullscreenTimerPauseBtn" onclick="toggleFullscreenTimer()">⏸️ 暂停</button>
+      <button class="timer-btn close" onclick="closeFullscreenTimer()">✖️ 关闭</button>
+    </div>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+    let allData = { students: [], homeworks: [], submissions: [], rewards: [], redemptions: [], exams: [], examScores: [] };
+    let studentsWithAverage = [];
+    let currentRedemptionId = null;
+    let currentExamId = null;
+    let studentDetailChart = null;
+    let currentDetailStudentId = null;
+    
+    let timerInterval = null;
+    let timerSeconds = 60;
+    let fullscreenTimerInterval = null;
+    let fullscreenTimerSeconds = 0;
+    let isFullscreenTimerPaused = false;
+    let currentExamForTimer = null;
+
+    let pieChart, barChart, lineChart, radarChart, donutChart, gaugeChart;
+
+    window.onload = async () => {
+      showLoading();
+      
+      setTimeout(async () => {
+        await loadAllData();
+        await loadStudentsWithAverage();
+        
+        renderScoreStats();
+        renderExamAverageStats();
+        renderLowestScores();
+        renderStudentList();
+        renderStudentCheckboxes();
+        renderHomeworkList();
+        renderRewardList();
+        renderRedemptionList();
+        renderExamList();
+        
+        hideLoading();
+        
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => {
+            initAllCharts();
+            updateAllCharts();
+          }, { timeout: 1000 });
+        } else {
+          setTimeout(() => {
+            initAllCharts();
+            updateAllCharts();
+          }, 200);
+        }
+      }, 50);
+    };
+
+    function showToast(message, type = 'info', duration = 3000) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.style.position = 'relative';
+      toast.style.overflow = 'hidden';
+      
+      let icon = 'info-circle';
+      if (type === 'success') icon = 'check-circle';
+      if (type === 'error') icon = 'exclamation-circle';
+      if (type === 'warning') icon = 'exclamation-triangle';
+      
+      toast.innerHTML = `
+        <i class="fas fa-${icon}"></i>
+        <span class="toast-message">${message}</span>
+        <div class="toast-progress" style="animation: progress ${duration/1000}s linear forwards;"></div>
+      `;
+      
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        if (toast && toast.parentNode) {
+          toast.remove();
+        }
+      }, duration);
+    }
+
+    function showLoading() {
+      document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingOverlay').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('loadingOverlay').style.display = 'none';
+      }, 300);
+    }
+
+    async function loadAllData() {
+      allData = await ipcRenderer.invoke('get-all-data');
+    }
+
+    async function loadStudentsWithAverage() {
+      const res = await ipcRenderer.invoke('get-all-students-exam-averages');
+      if (res.success) {
+        studentsWithAverage = res.students;
+      }
+    }
+
+    async function loadExamAverage() {
+      const res = await ipcRenderer.invoke('calculate-class-exam-average');
+      if (res.success) {
+        const avgElement = document.getElementById('examAvgScore');
+        const detailElement = document.getElementById('examAvgDetail');
+        
+        if (res.average > 0) {
+          // 转换为120分制显示
+          const avg120 = Math.round((res.average / 100) * 120 * 10) / 10;
+          avgElement.innerText = avg120;
+          detailElement.innerText = `(${res.studentCount}人参加，共${res.totalExams}场考试) (120分制)`;
+        } else {
+          avgElement.innerText = '--';
+          detailElement.innerText = '(暂无考试数据)';
+        }
+      }
+    }
+
+    function renderAll() {
+      renderScoreStats();
+      renderExamAverageStats();
+      updateAllCharts();
+      renderLowestScores();
+      renderStudentList();
+      renderStudentCheckboxes();
+      renderHomeworkList();
+      renderRewardList();
+      renderRedemptionList();
+      renderExamList();
+    }
+
+    function initAllCharts() {
+      pieChart = echarts.init(document.getElementById('pieChart'));
+      barChart = echarts.init(document.getElementById('barChart'));
+      lineChart = echarts.init(document.getElementById('lineChart'));
+      radarChart = echarts.init(document.getElementById('radarChart'));
+      donutChart = echarts.init(document.getElementById('donutChart'));
+      gaugeChart = echarts.init(document.getElementById('gaugeChart'));
+    }
+
+    function updateAllCharts() {
+      const students = allData.students || [];
+      const total = students.length;
+
+      const high = students.filter(s => s.score > 200).length;
+      const medium = students.filter(s => s.score >= 100 && s.score <= 200).length;
+      const low = students.filter(s => s.score < 100).length;
+
+      const pieData = [];
+      if (high > 0) pieData.push({ value: high, name: '高分 >200', itemStyle: { color: '#1e88e5' } });
+      if (medium > 0) pieData.push({ value: medium, name: '中分 100-200', itemStyle: { color: '#64b5f6' } });
+      if (low > 0) pieData.push({ value: low, name: '低分 <100', itemStyle: { color: '#bbdefb' } });
+
+      if (pieData.length > 0) {
+        pieChart.setOption({
+          tooltip: { trigger: 'item' },
+          series: [{
+            type: 'pie', radius: ['45%', '70%'],
+            data: pieData,
+            label: { show: true, position: 'outside', formatter: '{b}' },
+            emphasis: { scale: false }
+          }]
+        });
+      } else {
+        pieChart.setOption({ title: { show: true, text: '暂无数据', left: 'center', top: 'center' }, series: [] });
+      }
+
+      const ranges = [
+        students.filter(s => s.score <= 50).length,
+        students.filter(s => s.score > 50 && s.score <= 100).length,
+        students.filter(s => s.score > 100 && s.score <= 200).length,
+        students.filter(s => s.score > 200 && s.score <= 500).length,
+        students.filter(s => s.score > 500).length
+      ];
+      
+      if (students.length > 0) {
+        barChart.setOption({
+          tooltip: { trigger: 'axis' },
+          grid: { left: '10%', right: '5%' },
+          xAxis: { type: 'category', data: ['0-50', '51-100', '101-200', '201-500', '500+'], axisLabel: { color: '#1f5bac' } },
+          yAxis: { type: 'value', splitLine: { lineStyle: { color: '#d4e6ff' } } },
+          series: [{ type: 'bar', data: ranges, itemStyle: { color: '#3d8cff', borderRadius: [6,6,0,0] }, barWidth: 20 }]
+        });
+      } else {
+        barChart.setOption({ title: { show: true, text: '暂无数据', left: 'center', top: 'center' }, series: [] });
+      }
+
+      if (students.length > 0) {
+        const sortedForLine = [...students].sort((a,b) => b.score - a.score).slice(0, 12);
+        lineChart.setOption({
+          tooltip: { trigger: 'axis' },
+          grid: { left: '12%' },
+          xAxis: { type: 'category', data: sortedForLine.map(s => s.name), axisLabel: { rotate: 20, color: '#2f69b5' } },
+          yAxis: { type: 'value', name: '积分' },
+          series: [{ type: 'line', data: sortedForLine.map(s => s.score), smooth: true, lineStyle: { color: '#3385ff', width: 3 }, areaStyle: { color: '#b8d6ff' } }]
+        });
+      } else {
+        lineChart.setOption({ title: { show: true, text: '暂无数据', left: 'center', top: 'center' }, series: [] });
+      }
+
+      if (students.length > 0) {
+        let examAvgScore = 0;
+        const examScores = allData.examScores || [];
+        if (examScores.length > 0) {
+          const totalExamScore = examScores.reduce((sum, es) => sum + es.score, 0);
+          examAvgScore = Math.round(totalExamScore / examScores.length);
+        }
+
+        const totalHomeworkAssignments = allData.homeworks.reduce((acc, h) => 
+          acc + h.assignedStudentIds.length, 0);
+        const totalSubmissions = allData.submissions.length;
+        const homeworkSubmitRate = totalHomeworkAssignments > 0 ? 
+          Math.min(100, Math.round(totalSubmissions / totalHomeworkAssignments * 100)) : 0;
+
+        const examScoresList = allData.examScores || [];
+        const totalExamScores = examScoresList.length;
+        const highExamScores = examScoresList.filter(es => es.score > 90).length;
+        const examHighScoreRate = totalExamScores > 0 ? 
+          Math.round(highExamScores / totalExamScores * 100) : 0;
+
+        const redemptionsTotal = allData.redemptions.length;
+        const redemptionRate = students.length ? 
+          Math.min(100, Math.round(redemptionsTotal / students.length * 100)) : 0;
+
+        const maxExamAvg = Math.max(100, Math.ceil(examAvgScore * 1.2));
+        
+        radarChart.setOption({
+          radar: {
+            indicator: [
+              { name: '考试平均分', max: maxExamAvg },
+              { name: '作业提交率%', max: 100 },
+              { name: '考试高分率%', max: 100 },
+              { name: '兑换率%', max: 100 }
+            ],
+            center: ['50%', '50%'],
+            radius: '65%',
+            shape: 'circle',
+            name: { textStyle: { color: '#1f5bac', fontSize: 11 } },
+            splitArea: { areaStyle: { color: ['rgba(53, 142, 255, 0.03)', 'rgba(53, 142, 255, 0.05)'] } }
+          },
+          series: [{
+            type: 'radar',
+            data: [{
+              value: [
+                examAvgScore, 
+                homeworkSubmitRate, 
+                examHighScoreRate, 
+                redemptionRate
+              ],
+              areaStyle: { color: 'rgba(53, 142, 255, 0.2)' },
+              lineStyle: { color: '#1e88e5', width: 2 },
+              itemStyle: { color: '#1e88e5' }
+            }]
+          }]
+        });
+      } else {
+        radarChart.setOption({ title: { show: true, text: '暂无数据', left: 'center', top: 'center' }, series: [] });
+      }
+
+      const pending = allData.redemptions.filter(r => r.status === 'pending').length;
+      const approved = allData.redemptions.filter(r => r.status === 'approved' || r.status === 'completed').length;
+      const rejected = allData.redemptions.filter(r => r.status === 'rejected').length;
+
+      const donutData = [];
+      if (pending > 0) donutData.push({ value: pending, name: '待审批', itemStyle: { color: '#ffb347' } });
+      if (approved > 0) donutData.push({ value: approved, name: '已批准/完成', itemStyle: { color: '#32a852' } });
+      if (rejected > 0) donutData.push({ value: rejected, name: '已驳回', itemStyle: { color: '#f2645a' } });
+
+      if (donutData.length > 0) {
+        donutChart.setOption({
+          tooltip: { trigger: 'item' },
+          series: [{
+            type: 'pie', radius: ['50%', '72%'], avoidLabelOverlap: false,
+            data: donutData,
+            label: { show: true, position: 'outside', formatter: '{b}' }
+          }]
+        });
+      } else {
+        donutChart.setOption({ title: { show: true, text: '暂无兑换记录', left: 'center', top: 'center' }, series: [] });
+      }
+
+      const totalSubs = allData.submissions.length;
+      const totalHw = allData.homeworks.reduce((acc,h)=>acc + h.assignedStudentIds.length,0);
+      const submitRate = totalHw ? Math.min(100, Math.round(totalSubs / totalHw * 100)) : 0;
+      const gaugeValue = Math.min(100, Math.round(submitRate) || 0);
+      
+      if (totalHw > 0) {
+        gaugeChart.setOption({
+          series: [{
+            type: 'gauge', center: ['50%', '55%'], radius: '70%',
+            axisLine: { lineStyle: { width: 15, color: [[gaugeValue/100, '#2a82da'], [1, '#d6e9ff']] } },
+            detail: { formatter: '{value}%', fontSize: 16, color: '#1954a3' },
+            data: [{ value: gaugeValue, name: '提交率' }]
+          }]
+        });
+      } else {
+        gaugeChart.setOption({ title: { show: true, text: '暂无作业', left: 'center', top: 'center' }, series: [] });
+      }
+    }
+
+    function renderScoreStats() {
+      const s = allData.students;
+      if (!s.length) {
+        document.getElementById('totalScore').innerText = '0';
+        document.getElementById('avgScore').innerText = '0';
+        document.getElementById('maxScore').innerText = '0';
+        return;
+      }
+      const total = s.reduce((a,b)=>a+b.score,0);
+      document.getElementById('totalScore').innerText = total;
+      document.getElementById('avgScore').innerText = Math.round(total / s.length);
+      document.getElementById('maxScore').innerText = Math.max(...s.map(v=>v.score));
+    }
+
+    async function renderExamAverageStats() {
+      await loadExamAverage();
+    }
+
+    function renderLowestScores() {
+      if (!allData.students.length) {
+        document.getElementById('lowestScoreList').innerHTML = '<div>暂无学生</div>';
+        return;
+      }
+      const sorted = [...allData.students].sort((a,b)=>a.score - b.score).slice(0,5);
+      let html = '';
+      sorted.forEach((s,i)=> html += `<div class="student-item" onclick="showStudentDetail(${s.id})"><div><span class="name">${i+1}. ${s.name}</span>${i===0?'<span class="badge">最低</span>':''}</div><div>${s.score}分</div></div>`);
+      document.getElementById('lowestScoreList').innerHTML = html;
+    }
+
+    function renderExamList() {
+      const exams = allData.exams || [];
+      const list = document.getElementById('examList');
+      
+      if (exams.length === 0) {
+        list.innerHTML = '<div style="text-align: center; padding: 20px; color: #94a3b8;">暂无考试</div>';
+        return;
+      }
+
+      const sortedExams = [...exams].sort((a, b) => {
+        const statusOrder = { 'ongoing': 0, 'pending': 1, 'grading': 2, 'ended': 3 };
+        return statusOrder[a.status] - statusOrder[b.status];
+      });
+
+      list.innerHTML = sortedExams.map(exam => {
+        const statusText = {
+          'pending': '📝 准备开考',
+          'ongoing': '⏳ 考试中',
+          'grading': '📊 批卷中',
+          'ended': '✅ 已结束'
+        }[exam.status] || exam.status;
+
+        const statusClass = {
+          'pending': 'status-pending',
+          'ongoing': 'status-ongoing',
+          'grading': 'status-grading',
+          'ended': 'status-ended'
+        }[exam.status] || '';
+
+        return `
+          <div class="list-item" style="flex-wrap: wrap;">
+            <div style="flex: 2;">
+              <div class="item-name">${exam.name}</div>
+              <div class="item-detail">
+                <span><i class="far fa-clock"></i> ${exam.duration}分钟</span>
+                <span style="margin-left: 15px;"><i class="fas fa-star"></i> 总分${exam.totalScore}</span>
+                ${exam.description ? `<span style="margin-left: 15px;"><i class="fas fa-info-circle"></i> ${exam.description}</span>` : ''}
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <span class="status-badge ${statusClass}">${statusText}</span>
+              ${renderExamButtons(exam)}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderExamButtons(exam) {
+      const buttons = [];
+      
+      if (exam.status === 'pending') {
+        buttons.push(`<button class="btn btn-success" onclick="startExam('${exam.id}')"><i class="fas fa-play"></i> 开考</button>`);
+      }
+      
+      if (exam.status === 'ongoing') {
+        buttons.push(`<button class="btn btn-warning" onclick="endExam('${exam.id}')"><i class="fas fa-stop"></i> 结束考试</button>`);
+        buttons.push(`<button class="btn btn-primary" onclick="openFullscreenTimerForExam('${exam.id}')"><i class="fas fa-clock"></i> 打开计时器</button>`);
+      }
+      
+      if (exam.status === 'grading') {
+        buttons.push(`<button class="btn btn-primary" onclick="enterScores('${exam.id}')"><i class="fas fa-pencil-alt"></i> 录入成绩</button>`);
+        buttons.push(`<button class="btn btn-success" onclick="completeExam('${exam.id}')"><i class="fas fa-check"></i> 完成批卷</button>`);
+      }
+      
+      if (exam.status === 'ended') {
+        buttons.push(`<button class="btn" onclick="viewScores('${exam.id}')"><i class="fas fa-chart-bar"></i> 查看成绩</button>`);
+      }
+      
+      buttons.push(`<button class="btn btn-danger" onclick="deleteExam('${exam.id}')"><i class="fas fa-trash"></i> 删除</button>`);
+      
+      return buttons.join('');
+    }
+
+    async function createExam() {
+      const name = document.getElementById('examName').value.trim();
+      const duration = parseInt(document.getElementById('examDuration').value);
+      const totalScore = parseInt(document.getElementById('examTotalScore').value) || 100;
+      const description = document.getElementById('examDescription').value.trim();
+
+      if (!name) {
+        showToast('请输入考试名称', 'warning');
+        return;
+      }
+
+      if (!duration || duration < 1) {
+        showToast('请输入有效的考试时长', 'warning');
+        return;
+      }
+
+      const res = await ipcRenderer.invoke('create-exam', {
+        name,
+        description,
+        duration,
+        totalScore
+      });
+
+      if (res.success) {
+        showToast('考试创建成功', 'success');
+        document.getElementById('examName').value = '';
+        document.getElementById('examDescription').value = '';
+        document.getElementById('examDuration').value = '45';
+        document.getElementById('examTotalScore').value = '100';
+        await loadAllData();
+        renderExamList();
+        updateAllCharts();
+      } else {
+        showToast(res.msg, 'error');
+      }
+    }
+
+    async function startExam(examId) {
+      const confirmed = await showConfirm('确定开始考试吗？');
+      if (!confirmed) return;
+      
+      const res = await ipcRenderer.invoke('start-exam', examId);
+      if (res.success) {
+        await loadAllData();
+        renderExamList();
+        updateAllCharts();
+        openFullscreenTimerForExam(examId);
+      } else {
+        showToast(res.msg, 'error');
+      }
+    }
+
+    async function endExam(examId) {
+      const confirmed = await showConfirm('确定结束考试吗？这将停止计时器并进入批卷状态');
+      if (!confirmed) return;
+      
+      const res = await ipcRenderer.invoke('end-exam', examId);
+      if (res.success) {
+        await loadAllData();
+        renderExamList();
+        updateAllCharts();
+        closeFullscreenTimer();
+        showToast('考试已结束，现在可以录入成绩了', 'success');
+      } else {
+        showToast(res.msg, 'error');
+      }
+    }
+
+    async function completeExam(examId) {
+      const confirmed = await showConfirm('确定完成批卷吗？');
+      if (!confirmed) return;
+      
+      const res = await ipcRenderer.invoke('complete-exam', examId);
+      if (res.success) {
+        await loadAllData();
+        renderExamList();
+        updateAllCharts();
+        showToast('考试已完成', 'success');
+      } else {
+        showToast(res.msg, 'error');
+      }
+    }
+
+    async function deleteExam(examId) {
+      const confirmed = await showConfirm('确定删除考试吗？所有相关成绩也将被删除');
+      if (!confirmed) return;
+      
+      const res = await ipcRenderer.invoke('delete-exam', examId);
+      if (res.success) {
+        await loadAllData();
+        await loadStudentsWithAverage();
+        renderExamList();
+        updateAllCharts();
+        renderExamAverageStats();
+        showToast('考试已删除', 'success');
+      } else {
+        showToast(res.msg, 'error');
+      }
+    }
+
+    function openFullscreenTimerForExam(examId) {
+      const exam = allData.exams.find(e => e.id === examId);
+      if (!exam) return;
+      
+      currentExamForTimer = exam;
+      fullscreenTimerSeconds = exam.duration * 60;
+      isFullscreenTimerPaused = false;
+      
+      document.getElementById('fullscreenTimerName').innerText = exam.name;
+      updateFullscreenTimerDisplay();
+      
+      if (fullscreenTimerInterval) {
+        clearInterval(fullscreenTimerInterval);
+      }
+      
+      fullscreenTimerInterval = setInterval(() => {
+        if (!isFullscreenTimerPaused && fullscreenTimerSeconds > 0) {
+          fullscreenTimerSeconds--;
+          updateFullscreenTimerDisplay();
+          
+          if (fullscreenTimerSeconds <= 0) {
+            clearInterval(fullscreenTimerInterval);
+            showToast('考试时间到！', 'warning');
+            endExam(examId);
+          }
+        }
+      }, 1000);
+      
+      document.getElementById('fullscreenTimer').style.display = 'flex';
+      document.getElementById('fullscreenTimerPauseBtn').innerHTML = '⏸️ 暂停';
+    }
+
+    function updateFullscreenTimerDisplay() {
+      const minutes = Math.floor(fullscreenTimerSeconds / 60);
+      const seconds = fullscreenTimerSeconds % 60;
+      document.getElementById('fullscreenTimerDisplay').innerText = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function toggleFullscreenTimer() {
+      isFullscreenTimerPaused = !isFullscreenTimerPaused;
+      const btn = document.getElementById('fullscreenTimerPauseBtn');
+      btn.innerHTML = isFullscreenTimerPaused ? '▶️ 继续' : '⏸️ 暂停';
+    }
+
+    function closeFullscreenTimer() {
+      document.getElementById('fullscreenTimer').style.display = 'none';
+      if (fullscreenTimerInterval) {
+        clearInterval(fullscreenTimerInterval);
+        fullscreenTimerInterval = null;
+      }
+      isFullscreenTimerPaused = false;
+      currentExamForTimer = null;
+    }
+
+    function openFullscreenTimer() {
+      const minutes = parseInt(document.getElementById('timerMinutes').value) || 1;
+      fullscreenTimerSeconds = minutes * 60;
+      isFullscreenTimerPaused = false;
+      
+      document.getElementById('fullscreenTimerName').innerText = '课堂计时器';
+      updateFullscreenTimerDisplay();
+      
+      if (fullscreenTimerInterval) {
+        clearInterval(fullscreenTimerInterval);
+      }
+      
+      fullscreenTimerInterval = setInterval(() => {
+        if (!isFullscreenTimerPaused && fullscreenTimerSeconds > 0) {
+          fullscreenTimerSeconds--;
+          updateFullscreenTimerDisplay();
+          
+          if (fullscreenTimerSeconds <= 0) {
+            clearInterval(fullscreenTimerInterval);
+            showToast('时间到！', 'warning');
+          }
+        }
+      }, 1000);
+      
+      document.getElementById('fullscreenTimer').style.display = 'flex';
+      document.getElementById('fullscreenTimerPauseBtn').innerHTML = '⏸️ 暂停';
+    }
+
+    async function enterScores(examId) {
+      const exam = allData.exams.find(e => e.id === examId);
+      if (!exam) return;
+      
+      currentExamId = examId;
+      const students = allData.students || [];
+      const examScores = allData.examScores.filter(es => es.examId === examId) || [];
+      
+      let html = `
+        <h4 style="margin-bottom: 15px;">${exam.name} - 成绩录入</h4>
+        <table class="score-table">
+          <thead>
+            <tr>
+              <th>学生姓名</th>
+              <th>成绩</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      students.forEach(student => {
+        const existingScore = examScores.find(es => es.studentId === student.id);
+        html += `
+          <tr>
+            <td>${student.name}</td>
+            <td>
+              <input type="number" class="score-input" id="score_${student.id}" 
+                     value="${existingScore ? existingScore.score : ''}" 
+                     min="0" max="${exam.totalScore}">
+            </td>
+            <td>
+              <input type="text" class="score-input" id="comment_${student.id}" 
+                     placeholder="备注" value="${existingScore ? (existingScore.comment || '') : ''}">
+            </td>
+          </tr>
+        `;
+      });
+      
+      html += `
+          </tbody>
+        </table>
+      `;
+      
+      document.getElementById('scoreEntryForm').innerHTML = html;
+      document.getElementById('scoreModalTitle').innerText = `录入成绩 - ${exam.name}`;
+      document.getElementById('scoreModal').style.display = 'flex';
+    }
+
+    async function saveAllScores() {
+      if (!currentExamId) return;
+      
+      const students = allData.students || [];
+      let successCount = 0;
+      
+      for (const student of students) {
+        const scoreInput = document.getElementById(`score_${student.id}`);
+        if (scoreInput && scoreInput.value) {
+          const score = parseInt(scoreInput.value);
+          const comment = document.getElementById(`comment_${student.id}`)?.value || '';
+          
+          if (!isNaN(score)) {
+            const res = await ipcRenderer.invoke('enter-exam-score', {
+              examId: currentExamId,
+              studentId: student.id,
+              score,
+              comment
+            });
+            
+            if (res.success) {
+              successCount++;
+            }
+          }
+        }
+      }
+      
+      showToast(`已保存 ${successCount} 个成绩`, 'success');
+      await loadAllData();
+      await loadStudentsWithAverage();
+      updateAllCharts();
+      renderExamAverageStats();
+      closeScoreModal();
+    }
+
+    function viewScores(examId) {
+      const exam = allData.exams.find(e => e.id === examId);
+      const examScores = allData.examScores.filter(es => es.examId === examId) || [];
+      
+      if (examScores.length === 0) {
+        showToast('暂无成绩数据', 'info');
+        return;
+      }
+      
+      let html = `
+        <h4 style="margin-bottom: 15px;">${exam.name} - 成绩单</h4>
+        <table class="score-table">
+          <thead>
+            <tr>
+              <th>学生姓名</th>
+              <th>成绩</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      examScores.sort((a, b) => b.score - a.score).forEach(es => {
+        html += `
+          <tr>
+            <td>${es.studentName}</td>
+            <td><strong>${es.score}</strong></td>
+            <td>${es.comment || ''}</td>
+          </tr>
+        `;
+      });
+      
+      html += `
+          </tbody>
+        </table>
+      `;
+      
+      document.getElementById('scoreEntryForm').innerHTML = html;
+      document.getElementById('scoreModalTitle').innerText = `成绩单 - ${exam.name}`;
+      document.getElementById('scoreModal').style.display = 'flex';
+    }
+
+    function closeScoreModal() {
+      document.getElementById('scoreModal').style.display = 'none';
+      currentExamId = null;
+    }
+
+    function showTool(t) { 
+      document.querySelectorAll('#toolDisplay > div').forEach(d=>d.style.display='none'); 
+      document.getElementById(t+'Tool').style.display='block'; 
+    }
+    
+    async function randomSelect() { 
+      const c = parseInt(document.getElementById('randomCount').value)||1; 
+      const res = await ipcRenderer.invoke('random-select-student', c); 
+      if(res.success) document.getElementById('randomResult').innerHTML = res.selectedStudents.map(s=>`<span style="background:#3385ff; color:white; padding:6px 14px; border-radius:40px; margin:4px;">${s.name}</span>`).join(''); 
+    }
+    
+    function calculate() { 
+      const n1=+document.getElementById('calc1').value||0, n2=+document.getElementById('calc2').value||0, op=document.getElementById('calcOp').value; 
+      let r= op==='+'?n1+n2: op==='-'?n1-n2: op==='*'?n1*n2: n2? n1/n2: '∞'; 
+      document.getElementById('calcResult').innerText=r; 
+    }
+    
+    function startTimer() { 
+      clearInterval(timerInterval); 
+      const mins=+document.getElementById('timerMinutes').value||1; 
+      timerSeconds=mins*60; 
+      updateTimerDisplay(); 
+      timerInterval=setInterval(()=>{ 
+        if(timerSeconds<=0){ 
+          clearInterval(timerInterval); 
+          showToast('时间到！', 'warning'); 
+        } else { 
+          timerSeconds--; 
+          updateTimerDisplay(); 
+        } 
+      },1000); 
+    }
+    
+    function resetTimer() { 
+      clearInterval(timerInterval); 
+      const mins=+document.getElementById('timerMinutes').value||1; 
+      timerSeconds=mins*60; 
+      updateTimerDisplay(); 
+    }
+    
+    function updateTimerDisplay() { 
+      const m=Math.floor(timerSeconds/60), s=timerSeconds%60; 
+      document.getElementById('timerDisplay').innerText=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; 
+    }
+    
+    function rollDice() { 
+      const r=Math.floor(Math.random()*6)+1; 
+      document.getElementById('diceResult').innerHTML = ['⚀','⚁','⚂','⚃','⚄','⚅'][r-1]; 
+    }
+    
+    function makeGroups() { 
+      const g=+document.getElementById('groupCount').value||2; 
+      const shuffled = [...allData.students];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      const groups=Array.from({length:g},()=>[]); 
+      shuffled.forEach((s,i)=>groups[i%g].push(s.name)); 
+      let html=''; 
+      groups.forEach((grp,i)=> html+=`<div style="margin-bottom:8px; padding:10px; background:#dceeff; border-radius:20px;"><strong>第${i+1}组</strong> (${grp.length}人)<br>${grp.join('、')}</div>`); 
+      document.getElementById('groupResult').innerHTML=html; 
+    }
+
+    function renderStudentList() {
+      const list = document.getElementById('studentList');
+      
+      if (studentsWithAverage.length === 0) {
+        list.innerHTML = '<div>暂无学生</div>';
+        return;
+      }
+
+      list.innerHTML = studentsWithAverage.map(s => {
+        const avgDisplay = s.examCount > 0 
+          ? `<span class="average-badge"><i class="fas fa-chart-line"></i> 平均 ${s.examAverage} (${s.examCount}场) (120分制)</span>` 
+          : `<span class="average-badge" style="opacity:0.6;"><i class="fas fa-chart-line"></i> 暂无考试</span>`;
+        
+        return `
+          <div class="student-item" onclick="showStudentDetail(${s.id})">
+            <div>
+              <div class="item-name" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                ${s.name}
+                ${avgDisplay}
+              </div>
+              <div class="item-detail">积分: ${s.score}</div>
+            </div>
+            <button class="btn btn-danger" onclick="event.stopPropagation(); deleteStudent(${s.id})">删除</button>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    function renderStudentCheckboxes() { 
+      const box=document.getElementById('studentCheckboxes'); 
+      box.innerHTML = allData.students.map(s=>`<label><input type="checkbox" class="student-cb" value="${s.id}"> ${s.name}</label>`).join(''); 
+      document.getElementById('selectAll').onchange = (e)=> document.querySelectorAll('.student-cb').forEach(c=>c.checked=e.target.checked); 
+    }
+    
+    async function addStudent() { 
+      const name=document.getElementById('studentName').value.trim(); 
+      if(!name) {
+        showToast('输入姓名', 'warning');
+        return;
+      }
+      const res=await ipcRenderer.invoke('add-student',name); 
+      if(res.success){ 
+        document.getElementById('studentName').value=''; 
+        await loadAllData();
+        await loadStudentsWithAverage(); 
+        renderAll(); 
+        showToast('添加成功', 'success');
+      } else {
+        showToast(res.msg, 'error');
+      }
+    }
+    
+    async function deleteStudent(id) { 
+      const confirmed = await showConfirm('确定删除?');
+      if(!confirmed) return; 
+      const res=await ipcRenderer.invoke('delete-student',id); 
+      if(res.success){ 
+        await loadAllData();
+        await loadStudentsWithAverage(); 
+        renderAll(); 
+        showToast('删除成功', 'success');
+      } 
+    }
+    
+    async function importStudents() { 
+      const res=await ipcRenderer.invoke('import-students-from-txt'); 
+      showToast(res.msg, res.success ? 'success' : 'error'); 
+      if(res.success){ 
+        await loadAllData();
+        await loadStudentsWithAverage(); 
+        renderAll(); 
+      } 
+    }
+    
+    async function resetScores() { 
+      const confirmed = await showConfirm('重置所有积分?');
+      if(!confirmed) return; 
+      const res=await ipcRenderer.invoke('reset-student-scores'); 
+      if(res.success){ 
+        await loadAllData(); 
+        renderAll(); 
+        showToast('积分已重置', 'success');
+      } 
+    }
+
+    function renderHomeworkList() { 
+      document.getElementById('homeworkList').innerHTML = allData.homeworks.map(h=>`<div class="list-item"><div><div class="item-name">${h.name}</div><div class="item-detail">+${h.score}分</div></div><button class="btn btn-danger" onclick="deleteHomework('${h.id}')">删除</button></div>`).join('')||'<div>暂无作业</div>'; 
+    }
+    
+    async function addHomework() { 
+      const name=document.getElementById('homeworkName').value.trim(); 
+      const score=parseInt(document.getElementById('homeworkScore').value)||10; 
+      const selected=[...document.querySelectorAll('.student-cb:checked')].map(c=>parseInt(c.value)); 
+      if(!name) {
+        showToast('输入作业名', 'warning');
+        return;
+      }
+      if(selected.length===0) {
+        showToast('至少选一名学生', 'warning');
+        return;
+      }
+      const res=await ipcRenderer.invoke('add-homework',{name,assignedStudentIds:selected,score}); 
+      if(res.success){ 
+        document.getElementById('homeworkName').value=''; 
+        document.getElementById('homeworkScore').value='10'; 
+        document.querySelectorAll('.student-cb').forEach(c=>c.checked=false); 
+        document.getElementById('selectAll').checked=false; 
+        await loadAllData(); 
+        renderAll(); 
+        showToast('作业添加成功', 'success');
+      } else {
+        showToast(res.msg, 'error');
+      }
+    }
+    
+    async function deleteHomework(id) { 
+      const confirmed = await showConfirm('删除作业?');
+      if(!confirmed) return; 
+      const res=await ipcRenderer.invoke('delete-homework',id); 
+      if(res.success){ 
+        await loadAllData(); 
+        renderAll(); 
+        showToast('作业已删除', 'success');
+      } 
+    }
+
+    function renderRewardList() { 
+      document.getElementById('rewardList').innerHTML = allData.rewards.map(r=>`<div class="list-item"><div><div class="item-name">🎁 ${r.name}</div><div class="item-detail">${r.points}积分</div></div><button class="btn btn-danger" onclick="deleteReward('${r.id}')">删除</button></div>`).join('')||'<div>暂无奖励</div>'; 
+    }
+    
+    async function addReward() { 
+      const name=document.getElementById('rewardName').value.trim(); 
+      const points=parseInt(document.getElementById('rewardPoints').value); 
+      if(!name||points<1) {
+        showToast('名称或积分无效', 'warning');
+        return;
+      }
+      const res=await ipcRenderer.invoke('add-reward',{name,points}); 
+      if(res.success){ 
+        document.getElementById('rewardName').value=''; 
+        document.getElementById('rewardPoints').value=''; 
+        await loadAllData(); 
+        renderAll(); 
+        showToast('奖励添加成功', 'success');
+      } else {
+        showToast(res.msg, 'error');
+      }
+    }
+    
+    async function deleteReward(id) { 
+      const confirmed = await showConfirm('删除奖励?');
+      if(!confirmed) return; 
+      const res=await ipcRenderer.invoke('delete-reward',id); 
+      if(res.success){ 
+        await loadAllData(); 
+        renderAll(); 
+        showToast('奖励已删除', 'success');
+      } 
+    }
+
+    function renderRedemptionList() { 
+      const pending=allData.redemptions.filter(r=>r.status==='pending'); 
+      if(pending.length===0) { 
+        document.getElementById('redemptionList').innerHTML='<div>暂无待处理请求</div>'; 
+        return; 
+      } 
+      document.getElementById('redemptionList').innerHTML = pending.map(r=>{ 
+        const stu=allData.students.find(s=>s.id===r.studentId); 
+        const rew=allData.rewards.find(rew=>rew.id===r.rewardId); 
+        return `<div class="list-item"><div><div class="item-name">${stu?.name||''} 申请 ${rew?.name||''}</div><div class="item-detail">${r.pointsCost}积分</div></div><div><button class="btn btn-success" onclick="processRedemption('${r.id}','approve')">批准</button><button class="btn btn-warning" style="margin-left:5px;" onclick="processRedemption('${r.id}','reject')">驳回</button></div></div>`; 
+      }).join(''); 
+    }
+    
+    function processRedemption(id,action){ 
+      if(action==='reject'){ 
+        currentRedemptionId=id; 
+        document.getElementById('rejectModal').style.display='flex'; 
+      } else handleRedemption(id,action,''); 
+    }
+    
+    async function handleRedemption(id,action,note){ 
+      const res=await ipcRenderer.invoke('process-redemption',{redemptionId:id,action,note}); 
+      if(res.success){ 
+        await loadAllData(); 
+        await loadStudentsWithAverage();
+        renderAll(); 
+        showToast('操作成功', 'success');
+      } else {
+        showToast(res.msg, 'error');
+      }
+    }
+    
+    function confirmReject() { 
+      const note=document.getElementById('rejectReason').value.trim(); 
+      if(!note){ 
+        showToast('输入驳回原因', 'warning');
+        return; 
+      } 
+      handleRedemption(currentRedemptionId,'reject',note); 
+      closeRejectModal(); 
+    }
+    
+    function closeRejectModal(){ 
+      document.getElementById('rejectModal').style.display='none'; 
+      document.getElementById('rejectReason').value=''; 
+      currentRedemptionId=null; 
+    }
+
+    // ========== 学生详情卡片 ==========
+
+    async function showStudentDetail(studentId) {
+      currentDetailStudentId = studentId;
+      const student = allData.students.find(s => s.id === studentId);
+      if (!student) return;
+      
+      const avgRes = await ipcRenderer.invoke('calculate-student-exam-average', studentId);
+      const avg120 = avgRes.success && avgRes.count > 0 ? Math.round((avgRes.average / 100) * 120 * 10) / 10 : 0;
+      
+      document.getElementById('studentDetailName').innerText = `${student.name} 的考试分析`;
+      document.getElementById('studentDetailName2').innerText = student.name;
+      document.getElementById('studentDetailAvatar').innerText = student.name.charAt(0);
+      document.getElementById('studentDetailScore').innerText = student.score;
+      document.getElementById('studentDetailAvg').innerText = avg120 || '--';
+      document.getElementById('studentDetailCount').innerText = avgRes.success ? avgRes.count : 0;
+      
+      await loadStudentDetailHistory(studentId);
+      
+      document.getElementById('studentDetailModal').style.display = 'flex';
+    }
+
+    async function loadStudentDetailHistory(studentId) {
+      try {
+        const res = await ipcRenderer.invoke('get-student-exam-history', studentId);
+        const history = res.success ? res.history : [];
+        
+        await renderStudentDetailChart(history);
+        renderStudentDetailExamList(history);
+        
+        const chartContainer = document.getElementById('studentDetailChart');
+        const noDataDiv = document.getElementById('studentDetailNoData');
+        if (history.length === 0) {
+          chartContainer.style.display = 'none';
+          noDataDiv.style.display = 'block';
+        } else {
+          chartContainer.style.display = 'block';
+          noDataDiv.style.display = 'none';
+        }
+      } catch (e) {
+        console.error('加载考试历史失败:', e);
+      }
+    }
+
+    async function renderStudentDetailChart(history) {
+      const chartDom = document.getElementById('studentDetailChart');
+      
+      if (studentDetailChart) {
+        studentDetailChart.dispose();
+      }
+      
+      if (history.length === 0) return;
+      
+      const examAverages = [];
+      for (const exam of history) {
+        const res = await ipcRenderer.invoke('get-exam-class-average', exam.examId);
+        examAverages.push(res.success ? res.average120 : 0);
+      }
+      
+      const xAxisData = history.map(e => {
+        const date = new Date(e.examDate);
+        return `${e.examName}\n(${date.getMonth()+1}/${date.getDate()})`;
+      });
+      
+      const studentData = history.map(e => e.score120);
+      
+      studentDetailChart = echarts.init(chartDom);
+      studentDetailChart.setOption({
+        tooltip: {
+          trigger: 'axis',
+          formatter: function(params) {
+            let result = params[0].name + '<br/>';
+            params.forEach(param => {
+              result += `${param.marker} ${param.seriesName}: ${param.value} 分<br/>`;
+            });
+            return result;
+          }
+        },
+        legend: {
+          data: ['学生成绩', '班级平均'],
+          orient: 'horizontal',
+          left: 'center',
+          top: 0,
+          textStyle: { color: '#1a4d8c' }
+        },
+        grid: {
+          left: '5%',
+          right: '5%',
+          bottom: '8%',
+          top: '12%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: xAxisData,
+          axisLabel: {
+            rotate: 30,
+            color: '#1a4d8c',
+            fontSize: 11
+          },
+          axisLine: { lineStyle: { color: '#c2daff' } }
+        },
+        yAxis: {
+          type: 'value',
+          name: '分数',
+          nameTextStyle: { color: '#1a4d8c' },
+          min: 0,
+          max: 120,
+          axisLabel: { color: '#1a4d8c' },
+          splitLine: { lineStyle: { color: '#e2efff', type: 'dashed' } }
+        },
+        series: [
+          {
+            name: '学生成绩',
+            type: 'line',
+            data: studentData,
+            symbol: 'circle',
+            symbolSize: 8,
+            lineStyle: { color: '#3385ff', width: 3 },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(51, 133, 255, 0.3)' },
+                { offset: 1, color: 'rgba(51, 133, 255, 0.1)' }
+              ])
+            },
+            itemStyle: { color: '#3385ff', borderColor: '#fff', borderWidth: 2 },
+            markLine: {
+              silent: true,
+              symbol: 'none',
+              lineStyle: { type: 'dashed' },
+              data: [
+                { yAxis: 72, name: '及格线(72分)', lineStyle: { color: '#f2645a', width: 2, type: 'dashed' } },
+                { yAxis: 108, name: '优秀线(108分)', lineStyle: { color: '#32a852', width: 2, type: 'dashed' } }
+              ],
+              label: {
+                show: true,
+                position: 'end',
+                formatter: '{b}',
+                color: '#1a4d8c',
+                fontSize: 11
+              }
+            }
+          },
+          {
+            name: '班级平均',
+            type: 'line',
+            data: examAverages,
+            symbol: 'diamond',
+            symbolSize: 8,
+            lineStyle: { color: '#ffaa33', width: 2, type: 'dashed' },
+            itemStyle: { color: '#ffaa33', borderColor: '#fff', borderWidth: 2 }
+          }
+        ]
+      });
+
+      // 强制图表重新布局
+      studentDetailChart.resize();
+      setTimeout(() => {
+        if (studentDetailChart) {
+          studentDetailChart.resize();
+        }
+      }, 200);
+      
+      window.addEventListener('resize', () => {
+        if (studentDetailChart) studentDetailChart.resize();
+      });
+    }
+
+    function renderStudentDetailExamList(history) {
+      const listDiv = document.getElementById('studentDetailExamList');
+      
+      if (history.length === 0) {
+        listDiv.innerHTML = '<div style="text-align: center; padding: 20px; color: #4b7bb8;">暂无考试记录</div>';
+        return;
+      }
+      
+      listDiv.innerHTML = history.map(exam => {
+        const score120 = exam.score120;
+        const originalScore = exam.score;
+        const totalScore = exam.totalScore;
+        
+        return `
+          <div class="exam-list-item">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div style="font-weight: 600; color: #194a79;">${exam.examName}</div>
+                <div style="font-size: 12px; color: #4b7bb8;">
+                  <i class="far fa-calendar"></i> ${new Date(exam.examDate).toLocaleDateString()}
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 18px; font-weight: 600; color: #3385ff;">${score120} <span style="font-size: 12px; color: #4b7bb8;">/120</span></div>
+                <div style="font-size: 12px; color: #4b7bb8;">原始成绩: ${originalScore}/${totalScore}</div>
+              </div>
+            </div>
+            ${exam.comment ? `<div style="margin-top: 8px; font-size: 12px; color: #4b7bb8; background: #ecf5ff; padding: 6px; border-radius: 8px;"><i class="fas fa-comment"></i> ${exam.comment}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function closeStudentDetailModal() {
+      document.getElementById('studentDetailModal').style.display = 'none';
+      if (studentDetailChart) {
+        studentDetailChart.dispose();
+        studentDetailChart = null;
+      }
+    }
+
+    function showModal(options) {
+      return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.display = 'flex';
+        
+        const content = document.createElement('div');
+        content.className = 'modal-content';
+        
+        const title = document.createElement('div');
+        title.className = 'modal-title';
+        title.innerText = options.title || '提示';
+        
+        const body = document.createElement('div');
+        if (typeof options.content === 'string') {
+          body.innerHTML = options.content;
+        } else {
+          body.appendChild(options.content);
+        }
+        
+        const buttons = document.createElement('div');
+        buttons.className = 'modal-buttons';
+        buttons.style.display = 'flex';
+        buttons.style.gap = '10px';
+        buttons.style.justifyContent = 'flex-end';
+        buttons.style.marginTop = '20px';
+        
+        options.buttons.forEach(btn => {
+          const button = document.createElement('button');
+          button.className = `btn ${btn.primary ? 'btn-primary' : ''}`;
+          button.innerText = btn.text;
+          button.onclick = () => {
+            document.body.removeChild(modal);
+            if (btn.value !== undefined) resolve(btn.value);
+            else resolve();
+          };
+          buttons.appendChild(button);
+        });
+        
+        content.appendChild(title);
+        content.appendChild(body);
+        content.appendChild(buttons);
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+      });
+    }
+
+    function showConfirm(message) {
+      return showModal({
+        title: '确认',
+        content: `<p style="color: #194a79; margin-bottom: 10px;">${message}</p>`,
+        buttons: [
+          { text: '取消', value: false },
+          { text: '确定', primary: true, value: true }
+        ]
+      });
+    }
+
+    function gotoTeacher() { 
+      document.getElementById('teacherModal').style.display='flex'; 
+      document.getElementById('teacherPassword').focus(); 
+    }
+    
+    function closeTeacherModal(){ 
+      document.getElementById('teacherModal').style.display='none'; 
+      document.getElementById('teacherPassword').value=''; 
+    }
+    
+    async function verifyTeacher() { 
+      const pwd=document.getElementById('teacherPassword').value.trim(); 
+      if(!pwd) {
+        showToast('输入密码', 'warning');
+        return;
+      }
+      const res=await ipcRenderer.invoke('verify-teacher-password',pwd); 
+      if(res.success) closeTeacherModal(); 
+      else { 
+        showToast(res.msg, 'error');
+        document.getElementById('teacherPassword').value=''; 
+      } 
+    }
+    
+    async function backToStudent() { 
+      await ipcRenderer.invoke('back-to-student'); 
+    }
+
+    // 暴露全局函数
+    window.showTool = showTool; 
+    window.randomSelect = randomSelect; 
+    window.calculate = calculate; 
+    window.startTimer = startTimer; 
+    window.resetTimer = resetTimer; 
+    window.rollDice = rollDice; 
+    window.makeGroups = makeGroups;
+    window.openFullscreenTimer = openFullscreenTimer;
+    window.closeFullscreenTimer = closeFullscreenTimer;
+    window.toggleFullscreenTimer = toggleFullscreenTimer;
+    
+    window.addStudent = addStudent; 
+    window.deleteStudent = deleteStudent; 
+    window.importStudents = importStudents; 
+    window.resetScores = resetScores;
+    
+    window.addHomework = addHomework; 
+    window.deleteHomework = deleteHomework; 
+    window.addReward = addReward; 
+    window.deleteReward = deleteReward;
+    
+    window.processRedemption = processRedemption; 
+    window.confirmReject = confirmReject; 
+    window.closeRejectModal = closeRejectModal;
+    
+    window.gotoTeacher = gotoTeacher; 
+    window.closeTeacherModal = closeTeacherModal; 
+    window.verifyTeacher = verifyTeacher; 
+    window.backToStudent = backToStudent;
+    
+    window.createExam = createExam;
+    window.startExam = startExam;
+    window.endExam = endExam;
+    window.completeExam = completeExam;
+    window.deleteExam = deleteExam;
+    window.enterScores = enterScores;
+    window.viewScores = viewScores;
+    window.saveAllScores = saveAllScores;
+    window.closeScoreModal = closeScoreModal;
+    window.openFullscreenTimerForExam = openFullscreenTimerForExam;
+    
+    window.showStudentDetail = showStudentDetail;
+    window.closeStudentDetailModal = closeStudentDetailModal;
+  </script>
+</body>
+</html>

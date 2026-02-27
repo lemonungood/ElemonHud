@@ -1,0 +1,345 @@
+{
+  "@electron/asar@4.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/asar",
+    "path": "D:\\DEV\\app\\node_modules\\@electron\\asar",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\@electron\\asar\\LICENSE.md"
+  },
+  "@isaacs/cliui@9.0.0": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/cliui",
+    "path": "D:\\DEV\\app\\node_modules\\@isaacs\\cliui",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\@isaacs\\cliui\\LICENSE.md"
+  },
+  "ElemonHud@1.0.0": {
+    "licenses": "UNKNOWN",
+    "publisher": "THEWINDOWS11",
+    "path": "D:\\DEV\\app"
+  },
+  "ajv-formats@3.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ajv-validator/ajv-formats",
+    "publisher": "Evgeny Poberezkin",
+    "path": "D:\\DEV\\app\\node_modules\\ajv-formats",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\ajv-formats\\LICENSE"
+  },
+  "ajv@8.18.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ajv-validator/ajv",
+    "publisher": "Evgeny Poberezkin",
+    "path": "D:\\DEV\\app\\node_modules\\ajv",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\ajv\\LICENSE"
+  },
+  "atomically@2.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/fabiospampinato/atomically",
+    "path": "D:\\DEV\\app\\node_modules\\atomically",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\atomically\\license"
+  },
+  "balanced-match@4.0.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/juliangruber/balanced-match",
+    "path": "D:\\DEV\\app\\node_modules\\balanced-match",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\balanced-match\\LICENSE.md"
+  },
+  "brace-expansion@5.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/juliangruber/brace-expansion",
+    "path": "D:\\DEV\\app\\node_modules\\brace-expansion",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\brace-expansion\\LICENSE"
+  },
+  "commander@13.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tj/commander.js",
+    "publisher": "TJ Holowaychuk",
+    "email": "tj@vision-media.ca",
+    "path": "D:\\DEV\\app\\node_modules\\commander",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\commander\\LICENSE"
+  },
+  "conf@15.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/conf",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "D:\\DEV\\app\\node_modules\\conf",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\conf\\license"
+  },
+  "cross-spawn@7.0.6": {
+    "licenses": "MIT",
+    "repository": "https://github.com/moxystudio/node-cross-spawn",
+    "publisher": "André Cruz",
+    "email": "andre@moxy.studio",
+    "path": "D:\\DEV\\app\\node_modules\\cross-spawn",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\cross-spawn\\LICENSE"
+  },
+  "debounce-fn@6.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/debounce-fn",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "D:\\DEV\\app\\node_modules\\debounce-fn",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\debounce-fn\\license"
+  },
+  "dot-prop@10.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/dot-prop",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "D:\\DEV\\app\\node_modules\\dot-prop",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\dot-prop\\license"
+  },
+  "electron-store@11.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/electron-store",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "D:\\DEV\\app\\node_modules\\electron-store",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\electron-store\\license"
+  },
+  "env-paths@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/env-paths",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "D:\\DEV\\app\\node_modules\\env-paths",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\env-paths\\license"
+  },
+  "fast-deep-equal@3.1.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/fast-deep-equal",
+    "publisher": "Evgeny Poberezkin",
+    "path": "D:\\DEV\\app\\node_modules\\fast-deep-equal",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\fast-deep-equal\\LICENSE"
+  },
+  "fast-uri@3.1.0": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/fastify/fast-uri",
+    "publisher": "Vincent Le Goff",
+    "email": "vince.legoff@gmail.com",
+    "url": "https://github.com/zekth",
+    "path": "D:\\DEV\\app\\node_modules\\fast-uri",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\fast-uri\\LICENSE"
+  },
+  "foreground-child@3.3.1": {
+    "licenses": "ISC",
+    "repository": "https://github.com/tapjs/foreground-child",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me/",
+    "path": "D:\\DEV\\app\\node_modules\\foreground-child",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\foreground-child\\LICENSE"
+  },
+  "glob@11.1.0": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/node-glob",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "https://blog.izs.me/",
+    "path": "D:\\DEV\\app\\node_modules\\glob",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\glob\\LICENSE.md"
+  },
+  "isexe@2.0.0": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/isexe",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me/",
+    "path": "D:\\DEV\\app\\node_modules\\isexe",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\isexe\\LICENSE"
+  },
+  "jackspeak@4.2.3": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/jackspeak",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "path": "D:\\DEV\\app\\node_modules\\jackspeak",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\jackspeak\\LICENSE.md"
+  },
+  "json-schema-traverse@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/json-schema-traverse",
+    "publisher": "Evgeny Poberezkin",
+    "path": "D:\\DEV\\app\\node_modules\\json-schema-traverse",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\json-schema-traverse\\LICENSE"
+  },
+  "json-schema-typed@8.0.2": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/RemyRylan/json-schema-typed",
+    "publisher": "Remy Rylan",
+    "url": "https://github.com/RemyRylan",
+    "path": "D:\\DEV\\app\\node_modules\\json-schema-typed",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\json-schema-typed\\LICENSE.md"
+  },
+  "lru-cache@11.2.6": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/node-lru-cache",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "path": "D:\\DEV\\app\\node_modules\\lru-cache",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\lru-cache\\LICENSE.md"
+  },
+  "mimic-function@5.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/mimic-function",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "D:\\DEV\\app\\node_modules\\mimic-function",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\mimic-function\\license"
+  },
+  "minimatch@10.2.4": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/minimatch",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me",
+    "path": "D:\\DEV\\app\\node_modules\\minimatch",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\minimatch\\LICENSE.md"
+  },
+  "minipass@7.1.3": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/minipass",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me/",
+    "path": "D:\\DEV\\app\\node_modules\\minipass",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\minipass\\LICENSE.md"
+  },
+  "moment@2.30.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/moment/moment",
+    "publisher": "Iskren Ivov Chernev",
+    "email": "iskren.chernev@gmail.com",
+    "url": "https://github.com/ichernev",
+    "path": "D:\\DEV\\app\\node_modules\\moment",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\moment\\LICENSE"
+  },
+  "package-json-from-dist@1.0.1": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/package-json-from-dist",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "https://izs.me",
+    "path": "D:\\DEV\\app\\node_modules\\package-json-from-dist",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\package-json-from-dist\\LICENSE.md"
+  },
+  "path-key@3.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/path-key",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "D:\\DEV\\app\\node_modules\\path-key",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\path-key\\license"
+  },
+  "path-scurry@2.0.2": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/path-scurry",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "https://blog.izs.me",
+    "path": "D:\\DEV\\app\\node_modules\\path-scurry",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\path-scurry\\LICENSE.md"
+  },
+  "require-from-string@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floatdrop/require-from-string",
+    "publisher": "Vsevolod Strukchinsky",
+    "email": "floatdrop@gmail.com",
+    "url": "github.com/floatdrop",
+    "path": "D:\\DEV\\app\\node_modules\\require-from-string",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\require-from-string\\license"
+  },
+  "semver@7.7.4": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/node-semver",
+    "publisher": "GitHub Inc.",
+    "path": "D:\\DEV\\app\\node_modules\\semver",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\semver\\LICENSE"
+  },
+  "shebang-command@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kevva/shebang-command",
+    "publisher": "Kevin Mårtensson",
+    "email": "kevinmartensson@gmail.com",
+    "url": "github.com/kevva",
+    "path": "D:\\DEV\\app\\node_modules\\shebang-command",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\shebang-command\\license"
+  },
+  "shebang-regex@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/shebang-regex",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "D:\\DEV\\app\\node_modules\\shebang-regex",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\shebang-regex\\license"
+  },
+  "signal-exit@4.1.0": {
+    "licenses": "ISC",
+    "repository": "https://github.com/tapjs/signal-exit",
+    "publisher": "Ben Coe",
+    "email": "ben@npmjs.com",
+    "path": "D:\\DEV\\app\\node_modules\\signal-exit",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\signal-exit\\LICENSE.txt"
+  },
+  "stubborn-fs@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/fabiospampinato/stubborn-fs",
+    "path": "D:\\DEV\\app\\node_modules\\stubborn-fs",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\stubborn-fs\\license"
+  },
+  "stubborn-utils@1.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/fabiospampinato/stubborn-utils",
+    "path": "D:\\DEV\\app\\node_modules\\stubborn-utils",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\stubborn-utils\\license"
+  },
+  "tagged-tag@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/tagged-tag",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "D:\\DEV\\app\\node_modules\\tagged-tag",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\tagged-tag\\license"
+  },
+  "type-fest@5.4.4": {
+    "licenses": "(MIT OR CC0-1.0)",
+    "repository": "https://github.com/sindresorhus/type-fest",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "D:\\DEV\\app\\node_modules\\type-fest",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\type-fest\\license-cc0"
+  },
+  "uint8array-extras@1.5.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/uint8array-extras",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "D:\\DEV\\app\\node_modules\\uint8array-extras",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\uint8array-extras\\license"
+  },
+  "when-exit@2.1.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/fabiospampinato/when-exit",
+    "path": "D:\\DEV\\app\\node_modules\\when-exit",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\when-exit\\license"
+  },
+  "which@2.0.2": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/node-which",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me",
+    "path": "D:\\DEV\\app\\node_modules\\which",
+    "licenseFile": "D:\\DEV\\app\\node_modules\\which\\LICENSE"
+  }
+}
