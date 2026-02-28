@@ -4,173 +4,289 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ElemonHud - Homework & Points Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* 重置 + 核心变量（对齐student.html的视觉体系） */
         :root {
-            --primary: #2c3e50;
-            --accent: #3498db;
-            --light: #f5f7fa;
-            --dark: #1a2530;
-            --success: #2ecc71;
-            --border: #e0e6ed;
+            --primary-color: #3385ff;
+            --primary-dark: #1f6ed9;
+            --primary-light: #ecf5ff;
+            --text-primary: #194a79;
+            --text-secondary: #4b7bb8;
+            --bg-main: #f0f7ff;
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --border-color: #c2ddff;
+            --border-hover: #7bb3ff;
+            --success: #32a852;
+            --danger: #f2645a;
             --download: #e74c3c;
+            --download-hover: #c0392b;
+            --shadow-base: 0 8px 20px rgba(53, 126, 221, 0.06);
+            --shadow-hover: 0 12px 28px rgba(36, 107, 207, 0.1);
+            --radius-lg: 24px;
+            --radius-md: 20px;
+            --radius-sm: 16px;
+            --radius-pill: 40px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: var(--light);
-            color: var(--primary);
+            background-color: var(--bg-main);
+            color: var(--text-primary);
             line-height: 1.6;
+            padding: 24px;
+            min-height: 100vh;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 0;
         }
 
         header {
             text-align: center;
             margin-bottom: 3rem;
+            padding: 24px;
+            background: var(--bg-card);
+            backdrop-filter: blur(2px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-base);
         }
 
         h1 {
             font-size: 2.8rem;
-            color: var(--dark);
+            color: #1a4d8c;
             margin-bottom: 0.8rem;
+            letter-spacing: 0.3px;
         }
 
         .badges {
             display: flex;
-            gap: 1rem;
+            gap: 10px;
             justify-content: center;
             flex-wrap: wrap;
             margin: 1rem 0;
         }
 
         .badge {
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            background-color: var(--primary);
-            color: white;
-            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: var(--radius-pill);
+            background-color: var(--primary-light);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
             text-decoration: none;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge i {
+            color: var(--primary-color);
+            font-size: 1em;
         }
 
         .badge.license {
-            background-color: #007ec6;
+            background-color: #e6f0ff;
+            color: #007ec6;
+            border-color: #b9d8ff;
         }
 
         .badge.node {
-            background-color: #68a063;
+            background-color: #e6f7ef;
+            color: #2e7d32;
+            border-color: #b9e8cc;
         }
 
         .badge.electron {
-            background-color: #47848f;
+            background-color: #e6f0f5;
+            color: #47848f;
+            border-color: #b9d9e3;
         }
 
         .download-btn {
-            display: inline-block;
-            padding: 0.8rem 1.5rem;
-            background-color: var(--download);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 24px;
+            background-color: var(--danger);
             color: white;
-            border-radius: 4px;
+            border-radius: var(--radius-pill);
             font-weight: 600;
             text-decoration: none;
             margin: 1rem 0;
-            transition: background-color 0.3s;
+            transition: all 0.2s;
+            border: none;
+            box-shadow: 0 4px 12px rgba(242, 100, 90, 0.3);
+            cursor: pointer;
         }
 
         .download-btn:hover {
-            background-color: #c0392b;
+            background-color: var(--download-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(242, 100, 90, 0.4);
+        }
+
+        .download-btn i {
+            font-size: 1.2em;
         }
 
         .description {
             font-size: 1.1rem;
             max-width: 800px;
             margin: 0 auto 2rem;
-            color: var(--primary);
+            color: var(--text-secondary);
+            line-height: 1.8;
         }
 
         section {
-            margin-bottom: 3rem;
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+            background: var(--bg-card);
+            backdrop-filter: blur(2px);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-base);
+            transition: box-shadow 0.2s;
+        }
+
+        section:hover {
+            box-shadow: var(--shadow-hover);
         }
 
         h2 {
-            color: var(--dark);
+            color: #1a4d8c;
             font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        h2 i {
+            color: var(--primary-color);
+            font-size: 1.2em;
         }
 
         h3 {
             font-size: 1.3rem;
             margin: 1.2rem 0 0.8rem;
-            color: var(--accent);
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h3 i {
+            font-size: 1em;
         }
 
         ul {
             list-style: none;
-            padding-left: 1.2rem;
+            padding-left: 0;
         }
 
         li {
             margin-bottom: 0.8rem;
             position: relative;
+            padding: 12px 16px;
+            background: #f4faff;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        li:hover {
+            background: var(--primary-light);
+            border-color: var(--border-hover);
         }
 
         li::before {
-            content: "✓";
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
             color: var(--success);
             position: absolute;
-            left: -1.2rem;
-            font-weight: bold;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        li span {
+            padding-left: 28px;
+            display: block;
         }
 
         .quick-start {
-            background-color: var(--dark);
+            background: #1a4d8c;
             color: white;
-            border-radius: 8px;
-            padding: 2rem;
-            margin-top: 2rem;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid #2a6cb8;
+            box-shadow: 0 8px 20px rgba(26, 77, 140, 0.15);
         }
 
         .quick-start h2 {
             color: white;
-            border-bottom-color: rgba(255,255,255,0.2);
+            border-bottom-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .quick-start h3 {
+            color: #c2ddff;
         }
 
         .code-block {
-            background-color: var(--primary);
+            background-color: #194a79;
             color: white;
-            padding: 1rem;
-            border-radius: 4px;
+            padding: 20px;
+            border-radius: var(--radius-md);
             font-family: 'Consolas', 'Monaco', monospace;
             margin: 1rem 0;
             overflow-x: auto;
+            border: 1px solid #2a6cb8;
         }
 
+        /* 响应式适配 */
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.2rem;
             }
 
+            body {
+                padding: 16px;
+            }
+
             .container {
-                padding: 1.5rem 1rem;
+                width: 100%;
             }
 
             section {
-                padding: 1.5rem;
+                padding: 20px;
+            }
+
+            header {
+                padding: 20px;
+                margin-bottom: 2rem;
+            }
+
+            .download-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -180,13 +296,23 @@
         <header>
             <h1>ElemonHud</h1>
             <div class="badges">
-                <a href="#license" class="badge license">License: MIT</a>
-                <a href="#prerequisites" class="badge node">Node.js ≥ 20.0.0</a>
-                <a href="#dependencies" class="badge electron">electron-store</a>
+                <a href="#license" class="badge license">
+                    <i class="fas fa-file-contract"></i>
+                    License: MIT
+                </a>
+                <a href="#prerequisites" class="badge node">
+                    <i class="fas fa-code"></i>
+                    Node.js ≥ 20.0.0
+                </a>
+                <a href="#dependencies" class="badge electron">
+                    <i class="fas fa-desktop"></i>
+                    electron-store
+                </a>
             </div>
-            <!-- 醒目的下载按钮，指向你的Release地址 -->
+            <!-- 醒目的下载按钮，指向Release地址 -->
             <a href="https://github.com/lemonungood/ElemonHud/releases/latest" target="_blank" class="download-btn">
-                📥 Download Latest Windows Build
+                <i class="fas fa-download"></i>
+                Download Latest Windows Build
             </a>
             <p class="description">
                 A class homework and points management system built on the Electron framework, designed to support role-separated operations for teachers and students. It streamlines core educational workflows including homework distribution, submission tracking, points statistics, and exam score management.
@@ -194,37 +320,55 @@
         </header>
 
         <section id="features">
-            <h2>Key Features</h2>
+            <h2>
+                <i class="fas fa-star"></i>
+                Key Features
+            </h2>
             
-            <h3>Core Functionalities</h3>
+            <h3>
+                <i class="fas fa-cogs"></i>
+                Core Functionalities
+            </h3>
             <ul>
-                <li>Teacher password authentication: Differentiates operational permissions between teachers and students to ensure data security</li>
-                <li>Homework Management: Publish or delete homework tasks, assign targeted homework to individual students with corresponding point values</li>
-                <li>Homework Submission: Students automatically earn assigned points upon successful homework submission</li>
-                <li>Data Analytics: Track and manage student points, homework completion status, exam scores, and other academic metrics</li>
-                <li>Student Management: Add new students to the system and update point records in real-time</li>
-                <li>Local Data Storage: Securely store multi-dimensional data (homework, submission records, rewards, redemptions, exams) locally for offline accessibility</li>
+                <li><span>Teacher password authentication: Differentiates operational permissions between teachers and students to ensure data security</span></li>
+                <li><span>Homework Management: Publish or delete homework tasks, assign targeted homework to individual students with corresponding point values</span></li>
+                <li><span>Homework Submission: Students automatically earn assigned points upon successful homework submission</span></li>
+                <li><span>Data Analytics: Track and manage student points, homework completion status, exam scores, and other academic metrics</span></li>
+                <li><span>Student Management: Add new students to the system and update point records in real-time</span></li>
+                <li><span>Local Data Storage: Securely store multi-dimensional data (homework, submission records, rewards, redemptions, exams) locally for offline accessibility</span></li>
             </ul>
 
-            <h3>UI/UX Features</h3>
+            <h3>
+                <i class="fas fa-palette"></i>
+                UI/UX Features
+            </h3>
             <ul>
-                <li>Modern, intuitive UI design with responsive layout support (adapts to different screen sizes)</li>
-                <li>Role-specific interfaces: Dedicated, logically structured dashboards for teachers and students</li>
-                <li>Smooth interactive experience: Visual feedback for user actions (e.g., card hover effects, button animations)</li>
+                <li><span>Modern, intuitive UI design with responsive layout support (adapts to different screen sizes)</span></li>
+                <li><span>Role-specific interfaces: Dedicated, logically structured dashboards for teachers and students</span></li>
+                <li><span>Smooth interactive experience: Visual feedback for user actions (e.g., card hover effects, button animations)</span></li>
             </ul>
         </section>
 
         <section id="quick-start" class="quick-start">
-            <h2>Quick Start</h2>
+            <h2>
+                <i class="fas fa-rocket"></i>
+                Quick Start
+            </h2>
             
-            <h3>Prerequisites</h3>
+            <h3>
+                <i class="fas fa-check-circle"></i>
+                Prerequisites
+            </h3>
             <ul>
-                <li>Node.js ≥ 20.0.0 (compatible with Windows 64-bit systems)</li>
-                <li>npm or yarn package manager</li>
-                <li>Electron ≥ 28.0.0</li>
+                <li><span>Node.js ≥ 20.0.0 (compatible with Windows 64-bit systems)</span></li>
+                <li><span>npm or yarn package manager</span></li>
+                <li><span>Electron ≥ 28.0.0</span></li>
             </ul>
 
-            <h3>Installation & Run</h3>
+            <h3>
+                <i class="fas fa-terminal"></i>
+                Installation & Run
+            </h3>
             <div class="code-block">
                 # Clone the repository<br>
                 git clone https://github.com/lemonungood/ElemonHud.git<br>
@@ -240,24 +384,35 @@
                 npm run package
             </div>
 
-            <h3>Packaged Build</h3>
+            <h3>
+                <i class="fas fa-box"></i>
+                Packaged Build
+            </h3>
             <ul>
-                <li>After running <code>npm run package</code>, a standalone Windows executable (.exe) will be generated in the <code>dist/</code> directory</li>
-                <li>No external dependencies required – the .exe can be run directly on Windows 64-bit systems</li>
-                <li>Zero icon configuration (clean window design with no default app icons)</li>
+                <li><span>After running <code>npm run package</code>, a standalone Windows executable (.exe) will be generated in the <code>dist/</code> directory</span></li>
+                <li><span>No external dependencies required – the .exe can be run directly on Windows 64-bit systems</span></li>
+                <li><span>Zero icon configuration (clean window design with no default app icons)</span></li>
             </ul>
         </section>
 
         <section id="license">
-            <h2>License</h2>
-            <p>ElemonHud is released under the MIT License. See the <code>LICENSE</code> file in the repository for full details.</p>
+            <h2>
+                <i class="fas fa-shield-alt"></i>
+                License
+            </h2>
+            <p style="line-height: 1.8; color: var(--text-secondary);">
+                ElemonHud is released under the MIT License. See the <code>LICENSE</code> file in the repository for full details.
+            </p>
         </section>
 
         <section id="dependencies">
-            <h2>Key Dependencies</h2>
+            <h2>
+                <i class="fas fa-layer-group"></i>
+                Key Dependencies
+            </h2>
             <ul>
-                <li>Electron: Cross-platform desktop app framework (v28.0.0+)</li>
-                <li>electron-store: Local persistent data storage (latest stable version)</li>
+                <li><span>Electron: Cross-platform desktop app framework (v28.0.0+)</span></li>
+                <li><span>electron-store: Local persistent data storage (latest stable version)</span></li>
             </ul>
         </section>
     </div>
